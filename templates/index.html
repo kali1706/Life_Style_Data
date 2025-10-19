@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - Lifestyle Analytics{% endblock %}
+
+{% block content %}
+<div class="jumbotron bg-light p-5 rounded-3">
+    <div class="container text-center">
+        <h1 class="display-4"><i class="fas fa-heartbeat text-danger"></i> Lifestyle Analytics Platform</h1>
+        <p class="lead mt-4">Track your fitness journey, monitor nutrition, and achieve your health goals with data-driven insights.</p>
+        <hr class="my-4">
+        <p>Complete lifestyle data analytics solution for fitness, nutrition, and workout tracking.</p>
+        <div class="mt-4">
+            <a class="btn btn-primary btn-lg me-2" href="{{ url_for('register') }}" role="button">
+                <i class="fas fa-user-plus"></i> Get Started
+            </a>
+            <a class="btn btn-outline-primary btn-lg" href="{{ url_for('login') }}" role="button">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="fas fa-dumbbell fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Workout Tracking</h5>
+                <p class="card-text">Log your workouts, track heart rate, calories burned, and monitor performance over time.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="fas fa-utensils fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Nutrition Monitoring</h5>
+                <p class="card-text">Track daily meals, macros, calories, and get personalized nutrition insights.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="fas fa-chart-line fa-3x text-info mb-3"></i>
+                <h5 class="card-title">Analytics & Reports</h5>
+                <p class="card-text">Visualize your progress with interactive charts and generate detailed PDF/Excel reports.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-check-circle text-success"></i> Key Features</h5>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success"></i> BMI Calculator & Tracking</li>
+                    <li><i class="fas fa-check text-success"></i> Heart Rate Zone Analysis</li>
+                    <li><i class="fas fa-check text-success"></i> Calorie Balance Monitoring</li>
+                    <li><i class="fas fa-check text-success"></i> Macro Distribution Analysis</li>
+                    <li><i class="fas fa-check text-success"></i> Progress Score (0-100)</li>
+                    <li><i class="fas fa-check text-success"></i> Personalized Recommendations</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-file-export text-primary"></i> Export Options</h5>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-file-pdf text-danger"></i> PDF Reports with Charts</li>
+                    <li><i class="fas fa-file-excel text-success"></i> Excel Spreadsheet Export</li>
+                    <li><i class="fas fa-envelope text-info"></i> Email Report Delivery</li>
+                    <li><i class="fas fa-chart-bar text-warning"></i> Power BI Integration</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

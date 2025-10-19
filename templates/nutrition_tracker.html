@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Nutrition Tracker - Lifestyle Analytics{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2><i class="fas fa-utensils"></i> Nutrition Tracker</h2>
+    </div>
+</div>
+
+<!-- Today's Summary -->
+{% if today_log %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5><i class="fas fa-calendar-day"></i> Today's Nutrition Summary</h5>
+                <div class="row mt-3">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h3 class="text-primary">{{ today_log.total_calories or 0 }}</h3>
+                            <small class="text-muted">Total Calories</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h3 class="text-info">{{ today_log.total_carbs or 0 }}g</h3>
+                            <small class="text-muted">Carbs</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h3 class="text-success">{{ today_log.total_proteins or 0 }}g</h3>
+                            <small class="text-muted">Proteins</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h3 class="text-warning">{{ today_log.total_fats or 0 }}g</h3>
+                            <small class="text-muted">Fats</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+    <!-- Log Meal Form -->
+    <div class="col-md-5 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h5><i class="fas fa-plus"></i> Log New Meal</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('nutrition_tracker') }}">
+                    <div class="mb-3">
+                        <label for="meal_name" class="form-label">Meal Name *</label>
+                        <select class="form-select" id="meal_name" name="meal_name" required>
+                            <option value="">Select Meal</option>
+                            <option value="Breakfast">Breakfast</option>
+                            <option value="Lunch">Lunch</option>
+                            <option value="Dinner">Dinner</option>
+                            <option value="Snack">Snack</option>
+                            <option value="Post-Workout">Post-Workout</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="meal_type" class="form-label">Meal Type</label>
+                        <select class="form-select" id="meal_type" name="meal_type">
+                            <option value="Main">Main Meal</option>
+                            <option value="Snack">Snack</option>
+                            <option value="Beverage">Beverage</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="diet_type" class="form-label">Diet Type</label>
+                        <select class="form-select" id="diet_type" name="diet_type">
+                            <option value="Balanced">Balanced</option>
+                            <option value="Keto">Keto</option>
+                            <option value="Vegan">Vegan</option>
+                            <option value="Vegetarian">Vegetarian</option>
+                            <option value="Paleo">Paleo</option>
+                            <option value="Mediterranean">Mediterranean</option>
+                        </select>
+                    </div>
+                    
+                    <hr>
+                    <h6>Nutritional Information *</h6>
+                    
+                    <div class="mb-3">
+                        <label for="calories" class="form-label">Calories *</label>
+                        <input type="number" class="form-control" id="calories" 
+                               name="calories" required min="0" max="5000">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="carbs" class="form-label">Carbs (g) *</label>
+                            <input type="number" class="form-control" id="carbs" 
+                                   name="carbs" required min="0">
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="proteins" class="form-label">Protein (g) *</label>
+                            <input type="number" class="form-control" id="proteins" 
+                                   name="proteins" required min="0">
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="fats" class="form-label">Fats (g) *</label>
+                            <input type="number" class="form-control" id="fats" 
+                                   name="fats" required min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="sugar" class="form-label">Sugar (g)</label>
+                            <input type="number" class="form-control" id="sugar" 
+                                   name="sugar" min="0">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="sodium" class="form-label">Sodium (mg)</label>
+                            <input type="number" class="form-control" id="sodium" 
+                                   name="sodium" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="water_intake" class="form-label">Water Intake Today (liters)</label>
+                        <input type="number" step="0.1" class="form-control" id="water_intake" 
+                               name="water_intake" min="0" max="10" 
+                               value="{{ today_log.water_intake if today_log else '' }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Log Meal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Nutrition Logs -->
+    <div class="col-md-7 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="fas fa-history"></i> Recent Nutrition Logs</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_logs %}
+                    {% for log in recent_logs %}
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <strong>{{ log.date.strftime('%B %d, %Y') }}</strong>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Total Calories:</strong> {{ log.total_calories }} kcal</p>
+                                    <p><strong>Meals Logged:</strong> {{ log.meals|length }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Macros:</strong> C: {{ log.total_carbs }}g | P: {{ log.total_proteins }}g | F: {{ log.total_fats }}g</p>
+                                    <p><strong>Water:</strong> {{ log.water_intake or 0 }} L</p>
+                                </div>
+                            </div>
+                            
+                            {% if log.meals %}
+                            <hr>
+                            <h6>Meals:</h6>
+                            <ul class="list-unstyled">
+                                {% for meal in log.meals %}
+                                <li><span class="badge bg-info">{{ meal.meal_name }}</span> - {{ meal.calories }} kcal</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> No nutrition logs yet. Start by logging your first meal!
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - Lifestyle Analytics{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2><i class="fas fa-chart-line"></i> Analytics & Insights</h2>
+    </div>
+</div>
+
+<!-- User Health Metrics -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6 class="text-muted">Current BMI</h6>
+                <h2 class="text-primary">{{ user.bmi or 'N/A' }}</h2>
+                <small class="badge bg-{{ 'success' if user.get_bmi_category() == 'Normal' else 'warning' }}">
+                    {{ user.get_bmi_category() if user.bmi else 'Not Set' }}
+                </small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6 class="text-muted">Weight</h6>
+                <h2 class="text-info">{{ user.weight or 'N/A' }}</h2>
+                <small>kg</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6 class="text-muted">Body Fat</h6>
+                <h2 class="text-warning">{{ user.fat_percentage or 'N/A' }}</h2>
+                <small>%</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6 class="text-muted">Consistency</h6>
+                <h2 class="text-success">{{ weekly_stats.consistency_score }}</h2>
+                <small>%</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 1 -->
+<div class="row mb-4">
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="fas fa-chart-bar"></i> Weekly Calories Comparison</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="caloriesChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5><i class="fas fa-pie-chart"></i> Macronutrient Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="macroDistChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 2 -->
+{% if trends %}
+<div class="row mb-4">
+    <div class="col-md-12 mb-3">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5><i class="fas fa-chart-line"></i> 30-Day Trends</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="trendsChart" height="80"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Detailed Stats Table -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5><i class="fas fa-table"></i> Weekly Statistics Breakdown</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Value</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Total Workouts</td>
+                                <td>{{ weekly_stats.total_workouts }}</td>
+                                <td>
+                                    {% if weekly_stats.total_workouts >= 4 %}
+                                        <span class="badge bg-success">Excellent</span>
+                                    {% elif weekly_stats.total_workouts >= 3 %}
+                                        <span class="badge bg-primary">Good</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Needs Improvement</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Calories Burned</td>
+                                <td>{{ weekly_stats.total_calories_burned }} kcal</td>
+                                <td>
+                                    {% if weekly_stats.total_calories_burned >= 2000 %}
+                                        <span class="badge bg-success">Great</span>
+                                    {% else %}
+                                        <span class="badge bg-info">Keep Going</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Average Workout Duration</td>
+                                <td>{{ weekly_stats.avg_workout_duration }} minutes</td>
+                                <td>
+                                    {% if weekly_stats.avg_workout_duration >= 45 %}
+                                        <span class="badge bg-success">Optimal</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Increase Duration</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Calorie Balance</td>
+                                <td>{{ weekly_stats.calorie_balance }} kcal</td>
+                                <td>
+                                    {% if weekly_stats.calorie_balance > -500 and weekly_stats.calorie_balance < 500 %}
+                                        <span class="badge bg-success">Balanced</span>
+                                    {% elif weekly_stats.calorie_balance > 0 %}
+                                        <span class="badge bg-info">Surplus</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Deficit</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Consistency Score</td>
+                                <td>{{ weekly_stats.consistency_score }}%</td>
+                                <td>
+                                    {% if weekly_stats.consistency_score >= 80 %}
+                                        <span class="badge bg-success">Excellent</span>
+                                    {% elif weekly_stats.consistency_score >= 60 %}
+                                        <span class="badge bg-primary">Good</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Needs Work</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Calories Comparison Chart
+const caloriesCtx = document.getElementById('caloriesChart').getContext('2d');
+new Chart(caloriesCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Calories Consumed', 'Calories Burned'],
+        datasets: [{
+            label: 'Weekly Calories',
+            data: [{{ weekly_stats.total_calories_consumed }}, {{ weekly_stats.total_calories_burned }}],
+            backgroundColor: ['#3498db', '#e74c3c']
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Macro Distribution Chart
+const macroDistCtx = document.getElementById('macroDistChart').getContext('2d');
+new Chart(macroDistCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Carbs', 'Protein', 'Fat'],
+        datasets: [{
+            data: [
+                {{ weekly_stats.macro_percentages.Carbs }},
+                {{ weekly_stats.macro_percentages.Protein }},
+                {{ weekly_stats.macro_percentages.Fat }}
+            ],
+            backgroundColor: ['#3498db', '#2ecc71', '#f39c12']
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+{% if trends %}
+// 30-Day Trends Chart
+const trendsCtx = document.getElementById('trendsChart').getContext('2d');
+new Chart(trendsCtx, {
+    type: 'line',
+    data: {
+        labels: {{ trends.dates|tojson }},
+        datasets: [
+            {
+                label: 'Calories Burned',
+                data: {{ trends.calories_burned|tojson }},
+                borderColor: '#e74c3c',
+                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                fill: true
+            },
+            {
+                label: 'Calories Consumed',
+                data: {{ trends.calories_consumed|tojson }},
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                fill: true
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        },
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+{% endif %}
+</script>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Lifestyle Analytics{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3><i class="fas fa-user"></i> User Profile</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('profile') }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="age" class="form-label">Age *</label>
+                            <input type="number" class="form-control" id="age" name="age" 
+                                   value="{{ user.age or '' }}" required min="10" max="120">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="gender" class="form-label">Gender *</label>
+                            <select class="form-select" id="gender" name="gender" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
+                                <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
+                                <option value="Other" {% if user.gender == 'Other' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="weight" class="form-label">Weight (kg) *</label>
+                            <input type="number" step="0.1" class="form-control" id="weight" name="weight" 
+                                   value="{{ user.weight or '' }}" required min="20" max="300">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="height" class="form-label">Height (m) *</label>
+                            <input type="number" step="0.01" class="form-control" id="height" name="height" 
+                                   value="{{ user.height or '' }}" required min="0.5" max="2.5">
+                            <div class="form-text">Enter in meters (e.g., 1.75 for 175 cm)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="fat_percentage" class="form-label">Body Fat Percentage (%)</label>
+                            <input type="number" step="0.1" class="form-control" id="fat_percentage" 
+                                   name="fat_percentage" value="{{ user.fat_percentage or '' }}" 
+                                   min="5" max="50">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="experience_level" class="form-label">Experience Level *</label>
+                            <select class="form-select" id="experience_level" name="experience_level" required>
+                                <option value="">Select Experience</option>
+                                <option value="1" {% if user.experience_level == 1 %}selected{% endif %}>Beginner</option>
+                                <option value="2" {% if user.experience_level == 2 %}selected{% endif %}>Intermediate</option>
+                                <option value="3" {% if user.experience_level == 3 %}selected{% endif %}>Advanced</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    {% if user.bmi %}
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-calculator"></i> Current BMI</h5>
+                        <p class="mb-0">Your BMI is <strong>{{ user.bmi }}</strong> - Category: <strong>{{ user.get_bmi_category() }}</strong></p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i> Update Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Account Information -->
+        <div class="card mt-4">
+            <div class="card-header bg-secondary text-white">
+                <h5><i class="fas fa-info-circle"></i> Account Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Username:</strong> {{ user.username }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Member Since:</strong> {{ user.created_at.strftime('%B %d, %Y') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

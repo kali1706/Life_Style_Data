@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Lifestyle Analytics{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+        <p class="text-muted">Welcome back, {{ user.username }}!</p>
+    </div>
+</div>
+
+<!-- Progress Score -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card bg-gradient text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="card-body text-center">
+                <h3>Overall Progress Score</h3>
+                <h1 class="display-1">{{ progress_score }}/100</h1>
+                <div class="progress" style="height: 30px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress_score }}%;" 
+                         aria-valuenow="{{ progress_score }}" aria-valuemin="0" aria-valuemax="100">
+                        {{ progress_score }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body text-center">
+                <i class="fas fa-dumbbell fa-3x mb-2"></i>
+                <h5 class="card-title">Workouts This Week</h5>
+                <h2>{{ weekly_stats.total_workouts }}</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-danger">
+            <div class="card-body text-center">
+                <i class="fas fa-fire fa-3x mb-2"></i>
+                <h5 class="card-title">Calories Burned</h5>
+                <h2>{{ weekly_stats.total_calories_burned }}</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-success">
+            <div class="card-body text-center">
+                <i class="fas fa-utensils fa-3x mb-2"></i>
+                <h5 class="card-title">Meals Logged</h5>
+                <h2>{{ weekly_stats.total_meals }}</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-info">
+            <div class="card-body text-center">
+                <i class="fas fa-percentage fa-3x mb-2"></i>
+                <h5 class="card-title">Consistency</h5>
+                <h2>{{ weekly_stats.consistency_score }}%</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Weekly Statistics -->
+<div class="row mb-4">
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="fas fa-chart-bar"></i> Weekly Summary</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <td><strong>Total Workouts</strong></td>
+                            <td>{{ weekly_stats.total_workouts }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Calories Burned</strong></td>
+                            <td>{{ weekly_stats.total_calories_burned }} kcal</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Avg Workout Duration</strong></td>
+                            <td>{{ weekly_stats.avg_workout_duration }} min</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Calories Consumed</strong></td>
+                            <td>{{ weekly_stats.total_calories_consumed }} kcal</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Avg Daily Intake</strong></td>
+                            <td>{{ weekly_stats.avg_daily_intake }} kcal</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Calorie Balance</strong></td>
+                            <td class="{{ 'text-success' if weekly_stats.calorie_balance > 0 else 'text-danger' }}">
+                                {{ weekly_stats.calorie_balance }} kcal
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5><i class="fas fa-pie-chart"></i> Macro Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="macroChart" width="400" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Profile Summary -->
+{% if user.bmi %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5><i class="fas fa-user"></i> Your Profile</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <p><strong>BMI:</strong> {{ user.bmi }} ({{ user.get_bmi_category() }})</p>
+                    </div>
+                    <div class="col-md-3">
+                        <p><strong>Weight:</strong> {{ user.weight }} kg</p>
+                    </div>
+                    <div class="col-md-3">
+                        <p><strong>Height:</strong> {{ user.height }} m</p>
+                    </div>
+                    <div class="col-md-3">
+                        <p><strong>Age:</strong> {{ user.age }} years</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Insights & Recommendations -->
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5><i class="fas fa-lightbulb"></i> Key Insights</h5>
+            </div>
+            <div class="card-body">
+                {% if insights.insights %}
+                    <ul class="list-unstyled">
+                        {% for insight in insights.insights %}
+                            <li class="mb-2"><i class="fas fa-check-circle text-success"></i> {{ insight }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">Start logging your activities to get personalized insights!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5><i class="fas fa-exclamation-triangle"></i> Recommendations</h5>
+            </div>
+            <div class="card-body">
+                {% if insights.recommendations %}
+                    <ul class="list-unstyled">
+                        {% for rec in insights.recommendations %}
+                            <li class="mb-2"><i class="fas fa-arrow-right text-warning"></i> {{ rec }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-success"><i class="fas fa-thumbs-up"></i> You're doing great! Keep up the good work!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Macro Distribution Chart
+const ctx = document.getElementById('macroChart').getContext('2d');
+const macroChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ['Carbs', 'Protein', 'Fat'],
+        datasets: [{
+            data: [
+                {{ weekly_stats.macro_percentages.Carbs }},
+                {{ weekly_stats.macro_percentages.Protein }},
+                {{ weekly_stats.macro_percentages.Fat }}
+            ],
+            backgroundColor: [
+                '#3498db',
+                '#2ecc71',
+                '#e74c3c'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            },
+            title: {
+                display: true,
+                text: 'Weekly Macronutrient Distribution'
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

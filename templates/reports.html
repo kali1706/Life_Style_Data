@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Lifestyle Analytics{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2><i class="fas fa-file-pdf"></i> Reports & Export</h2>
+        <p class="text-muted">Generate and download comprehensive reports of your fitness journey</p>
+    </div>
+</div>
+
+<!-- Report Types -->
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-lg">
+            <div class="card-header bg-danger text-white">
+                <h4><i class="fas fa-file-pdf"></i> PDF Report</h4>
+            </div>
+            <div class="card-body">
+                <h5>Comprehensive PDF Report</h5>
+                <p>Generate a detailed PDF report including:</p>
+                <ul>
+                    <li><i class="fas fa-check text-success"></i> Personal profile summary</li>
+                    <li><i class="fas fa-check text-success"></i> Weekly performance statistics</li>
+                    <li><i class="fas fa-check text-success"></i> Macronutrient breakdown</li>
+                    <li><i class="fas fa-check text-success"></i> Progress metrics and trends</li>
+                    <li><i class="fas fa-check text-success"></i> Personalized insights</li>
+                    <li><i class="fas fa-check text-success"></i> Professional formatting</li>
+                </ul>
+                
+                <div class="d-grid mt-4">
+                    <a href="{{ url_for('generate_report', report_type='pdf') }}" 
+                       class="btn btn-danger btn-lg">
+                        <i class="fas fa-download"></i> Download PDF Report
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-lg">
+            <div class="card-header bg-success text-white">
+                <h4><i class="fas fa-file-excel"></i> Excel Report</h4>
+            </div>
+            <div class="card-body">
+                <h5>Detailed Excel Spreadsheet</h5>
+                <p>Export all your data to Excel with multiple sheets:</p>
+                <ul>
+                    <li><i class="fas fa-check text-success"></i> User profile information</li>
+                    <li><i class="fas fa-check text-success"></i> Weekly statistics summary</li>
+                    <li><i class="fas fa-check text-success"></i> Complete workout history</li>
+                    <li><i class="fas fa-check text-success"></i> Nutrition logs and meals</li>
+                    <li><i class="fas fa-check text-success"></i> Macronutrient breakdown</li>
+                    <li><i class="fas fa-check text-success"></i> Ready for Power BI</li>
+                </ul>
+                
+                <div class="d-grid mt-4">
+                    <a href="{{ url_for('generate_report', report_type='excel') }}" 
+                       class="btn btn-success btn-lg">
+                        <i class="fas fa-download"></i> Download Excel Report
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Information -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5><i class="fas fa-info-circle"></i> About Reports</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6><i class="fas fa-clock"></i> Report Period</h6>
+                        <p>Reports include data from the last 7 days (weekly) or 30 days (monthly)</p>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <h6><i class="fas fa-sync"></i> Real-time Data</h6>
+                        <p>Reports are generated in real-time with your latest data</p>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <h6><i class="fas fa-shield-alt"></i> Privacy</h6>
+                        <p>Reports are generated on-demand and not stored on servers</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Power BI Integration -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card border-primary">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="fas fa-chart-bar"></i> Power BI Integration</h5>
+            </div>
+            <div class="card-body">
+                <h5>Connect to Power BI Dashboard</h5>
+                <p>Use the Excel export to create powerful visualizations in Microsoft Power BI:</p>
+                
+                <div class="row mt-3">
+                    <div class="col-md-3 text-center">
+                        <div class="mb-2">
+                            <i class="fas fa-download fa-3x text-success"></i>
+                        </div>
+                        <h6>Step 1</h6>
+                        <p>Download Excel Report</p>
+                    </div>
+                    
+                    <div class="col-md-3 text-center">
+                        <div class="mb-2">
+                            <i class="fas fa-upload fa-3x text-primary"></i>
+                        </div>
+                        <h6>Step 2</h6>
+                        <p>Open in Power BI Desktop</p>
+                    </div>
+                    
+                    <div class="col-md-3 text-center">
+                        <div class="mb-2">
+                            <i class="fas fa-chart-line fa-3x text-info"></i>
+                        </div>
+                        <h6>Step 3</h6>
+                        <p>Create Visualizations</p>
+                    </div>
+                    
+                    <div class="col-md-3 text-center">
+                        <div class="mb-2">
+                            <i class="fas fa-share-alt fa-3x text-warning"></i>
+                        </div>
+                        <h6>Step 4</h6>
+                        <p>Publish & Share</p>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-lightbulb"></i> <strong>Tip:</strong> The Excel export is optimized for Power BI with clean data structure and multiple worksheets for different metrics.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sample Report Preview -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h5><i class="fas fa-eye"></i> What's Included in Reports</h5>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="reportAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#userProfile">
+                                <i class="fas fa-user"></i>&nbsp; User Profile Section
+                            </button>
+                        </h2>
+                        <div id="userProfile" class="accordion-collapse collapse show" 
+                             data-bs-parent="#reportAccordion">
+                            <div class="accordion-body">
+                                Age, Gender, Weight, Height, BMI, Body Fat %, Experience Level
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#workoutStats">
+                                <i class="fas fa-dumbbell"></i>&nbsp; Workout Statistics
+                            </button>
+                        </h2>
+                        <div id="workoutStats" class="accordion-collapse collapse" 
+                             data-bs-parent="#reportAccordion">
+                            <div class="accordion-body">
+                                Total workouts, calories burned, average duration, heart rate data, workout types distribution
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#nutritionStats">
+                                <i class="fas fa-utensils"></i>&nbsp; Nutrition Analysis
+                            </button>
+                        </h2>
+                        <div id="nutritionStats" class="accordion-collapse collapse" 
+                             data-bs-parent="#reportAccordion">
+                            <div class="accordion-body">
+                                Total calories consumed, macronutrient breakdown, meal frequency, water intake, diet type analysis
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#insights">
+                                <i class="fas fa-lightbulb"></i>&nbsp; Insights & Recommendations
+                            </button>
+                        </h2>
+                        <div id="insights" class="accordion-collapse collapse" 
+                             data-bs-parent="#reportAccordion">
+                            <div class="accordion-body">
+                                Personalized insights, recommendations for improvement, progress score, health metrics analysis
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
