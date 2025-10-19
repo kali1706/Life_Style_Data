@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard · Lifestyle Analytics{% endblock %}
+{% block content %}
+  <div class="row mb-4">
+    <div class="col">
+      <h1 class="h3">Dashboard</h1>
+      <p class="text-muted">Initial scaffolding — sample metrics below.</p>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-3">
+      <div class="card"><div class="card-body"><h6>Total Workouts</h6><div id="metric-workouts" class="fs-3">—</div></div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card"><div class="card-body"><h6>Calories Burned</h6><div id="metric-calories" class="fs-3">—</div></div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card"><div class="card-body"><h6>Avg Session (min)</h6><div id="metric-duration" class="fs-3">—</div></div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card"><div class="card-body"><h6>Meals Logged</h6><div id="metric-meals" class="fs-3">—</div></div></div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <div class="card"><div class="card-body"><h6>Macro Breakdown</h6><canvas id="macroChart" height="200"></canvas></div></div>
+    </div>
+    <div class="col-md-6">
+      <div class="card"><div class="card-body"><h6>Calorie Balance</h6><canvas id="calorieChart" height="200"></canvas></div></div>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const res = await fetch('/dashboard_data');
+        const data = await res.json();
+        const w = data.weekly;
+        document.getElementById('metric-workouts').textContent = w.workouts;
+        document.getElementById('metric-calories').textContent = w.calories_burned + ' kcal';
+        document.getElementById('metric-duration').textContent = w.avg_session_minutes;
+        document.getElementById('metric-meals').textContent = w.meals_logged;
+        window.renderDashboardCharts(w);
+      } catch (e) {
+        console.error(e);
+      }
+    });
+  </script>
+{% endblock %}
