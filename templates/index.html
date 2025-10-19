@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - Lifestyle Analytics Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="row align-items-center min-vh-75">
+        <div class="col-lg-6">
+            <div class="hero-content">
+                <h1 class="display-4 fw-bold text-primary mb-4">
+                    <i class="fas fa-chart-line me-3"></i>
+                    Lifestyle Analytics Platform
+                </h1>
+                <p class="lead mb-4">
+                    Transform your fitness journey with comprehensive data analytics. Track workouts, monitor nutrition, 
+                    and get personalized insights to achieve your health goals.
+                </p>
+                <div class="d-flex gap-3 mb-4">
+                    {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Get Started
+                        </a>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="hero-image text-center">
+                <div class="feature-card bg-light p-4 rounded-3 shadow-sm">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="stat-box bg-primary text-white p-3 rounded">
+                                <i class="fas fa-dumbbell fa-2x mb-2"></i>
+                                <h4>Workouts</h4>
+                                <p class="mb-0">Track & Analyze</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-box bg-success text-white p-3 rounded">
+                                <i class="fas fa-apple-alt fa-2x mb-2"></i>
+                                <h4>Nutrition</h4>
+                                <p class="mb-0">Monitor Intake</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-box bg-info text-white p-3 rounded">
+                                <i class="fas fa-chart-bar fa-2x mb-2"></i>
+                                <h4>Analytics</h4>
+                                <p class="mb-0">Get Insights</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-box bg-warning text-white p-3 rounded">
+                                <i class="fas fa-file-alt fa-2x mb-2"></i>
+                                <h4>Reports</h4>
+                                <p class="mb-0">Export Data</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2 class="text-center mb-5">
+                <i class="fas fa-star text-warning me-2"></i>
+                Platform Features
+            </h2>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="feature-card h-100 p-4 bg-light rounded-3 shadow-sm">
+                <div class="text-center mb-3">
+                    <i class="fas fa-heartbeat fa-3x text-danger"></i>
+                </div>
+                <h4 class="text-center mb-3">Comprehensive Tracking</h4>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success me-2"></i>Workout sessions & duration</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Heart rate monitoring</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Calories burned tracking</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Exercise library</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Body composition metrics</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="feature-card h-100 p-4 bg-light rounded-3 shadow-sm">
+                <div class="text-center mb-3">
+                    <i class="fas fa-utensils fa-3x text-success"></i>
+                </div>
+                <h4 class="text-center mb-3">Nutrition Management</h4>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success me-2"></i>Meal logging & tracking</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Macro breakdown analysis</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Calorie counting</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Water intake monitoring</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Diet type classification</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="feature-card h-100 p-4 bg-light rounded-3 shadow-sm">
+                <div class="text-center mb-3">
+                    <i class="fas fa-chart-pie fa-3x text-info"></i>
+                </div>
+                <h4 class="text-center mb-3">Advanced Analytics</h4>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success me-2"></i>Progress visualization</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Trend analysis</li>
+                    <li><i class="fas fa-check text-success me-2"></i>BMI & health metrics</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Performance insights</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Personalized recommendations</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Features -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2 class="text-center mb-5">
+                <i class="fas fa-file-export text-primary me-2"></i>
+                Report & Export Features
+            </h2>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="feature-card p-4 bg-gradient-primary text-white rounded-3 shadow">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-file-pdf fa-2x me-3"></i>
+                    <h4 class="mb-0">PDF Reports</h4>
+                </div>
+                <ul class="list-unstyled mb-0">
+                    <li><i class="fas fa-arrow-right me-2"></i>Comprehensive weekly/monthly analysis</li>
+                    <li><i class="fas fa-arrow-right me-2"></i>Visual charts and graphs</li>
+                    <li><i class="fas fa-arrow-right me-2"></i>Personalized recommendations</li>
+                    <li><i class="fas fa-arrow-right me-2"></i>Professional formatting</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="feature-card p-4 bg-gradient-success text-white rounded-3 shadow">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-file-excel fa-2x me-3"></i>
+                    <h4 class="mb-0">Excel Export</h4>
+                </div>
+                <ul class="list-unstyled mb-0">
+                    <li><i class="fas fa-arrow-right me-2"></i>Raw data export</li>
+                    <li><i class="fas fa-arrow-right me-2"></i>Multiple worksheets</li>
+                    <li><i class="fas fa-arrow-right me-2"></i>Embedded charts</li>
+                    <li><i class="fas fa-arrow-right me-2"></i>Data analysis ready</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Reports -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="feature-card p-4 bg-gradient-info text-white rounded-3 shadow text-center">
+                <div class="mb-3">
+                    <i class="fas fa-envelope fa-3x"></i>
+                </div>
+                <h4 class="mb-3">Automated Email Reports</h4>
+                <p class="mb-0">
+                    Schedule and send detailed reports to yourself, trainers, or healthcare providers. 
+                    Stay accountable and share your progress with your support network.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    {% if not current_user.is_authenticated %}
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <div class="cta-section p-5 bg-primary text-white rounded-3">
+                <h2 class="mb-3">Ready to Transform Your Lifestyle?</h2>
+                <p class="lead mb-4">
+                    Join thousands of users who are already tracking their fitness journey with our platform.
+                </p>
+                <a href="{{ url_for('register') }}" class="btn btn-light btn-lg">
+                    <i class="fas fa-rocket me-2"></i>Start Your Journey Today
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.min-vh-75 {
+    min-height: 75vh;
+}
+
+.hero-content h1 {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.stat-box {
+    transition: transform 0.3s ease;
+}
+
+.stat-box:hover {
+    transform: translateY(-5px);
+}
+
+.feature-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+}
+
+.bg-gradient-success {
+    background: linear-gradient(45deg, #28a745, #1e7e34);
+}
+
+.bg-gradient-info {
+    background: linear-gradient(45deg, #17a2b8, #117a8b);
+}
+
+.cta-section {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,64 @@
+# Flask and Web Framework
+Flask==2.3.3
+Flask-SQLAlchemy==3.0.5
+Flask-Login==0.6.3
+Werkzeug==2.3.7
+
+# Database
+SQLAlchemy==2.0.21
+
+# Data Processing and Analysis
+pandas==2.1.1
+numpy==1.24.3
+
+# Report Generation
+reportlab==4.0.4
+openpyxl==3.1.2
+matplotlib==3.7.2
+
+# Email functionality
+smtplib2==0.2.1
+
+# Date and Time handling
+python-dateutil==2.8.2
+
+# Environment variables
+python-dotenv==1.0.0
+
+# HTTP requests (if needed)
+requests==2.31.0
+
+# Math and Statistics
+scipy==1.11.3
+
+# Image processing (for charts)
+Pillow==10.0.1
+
+# Development and Testing
+pytest==7.4.2
+pytest-flask==1.2.0
+
+# Production server
+gunicorn==21.2.0
+
+# Security
+cryptography==41.0.4
+
+# Utilities
+click==8.1.7
+itsdangerous==2.1.2
+Jinja2==3.1.2
+MarkupSafe==2.1.3
+
+# Optional: For advanced analytics
+scikit-learn==1.3.0
+seaborn==0.12.2
+
+# Optional: For API documentation
+flask-restx==1.2.0
+
+# Optional: For caching
+Flask-Caching==2.1.0
+
+# Optional: For rate limiting
+Flask-Limiter==3.5.0

@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Lifestyle Analytics Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center min-vh-75">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3 class="mb-0">
+                        <i class="fas fa-sign-in-alt me-2"></i>Welcome Back
+                    </h3>
+                    <p class="mb-0 mt-2">Sign in to your account</p>
+                </div>
+                <div class="card-body p-4">
+                    <form id="loginForm" method="POST">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">
+                                Remember me
+                            </label>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="text-center">
+                        <p class="text-muted mb-2">Demo Accounts (for testing):</p>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <button class="btn btn-outline-info btn-sm w-100" onclick="fillDemo('beginner')">
+                                    <i class="fas fa-user me-1"></i>Beginner
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-outline-success btn-sm w-100" onclick="fillDemo('advanced')">
+                                    <i class="fas fa-user-ninja me-1"></i>Advanced
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <p class="mb-0">
+                        Don't have an account? 
+                        <a href="{{ url_for('register') }}" class="text-primary">Register here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Features Preview -->
+        <div class="col-md-6 col-lg-5 offset-lg-1 d-none d-md-block">
+            <div class="features-preview">
+                <h4 class="text-primary mb-4">
+                    <i class="fas fa-star me-2"></i>What you'll get:
+                </h4>
+                
+                <div class="feature-item mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="feature-icon bg-primary text-white rounded-circle me-3">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Comprehensive Analytics</h6>
+                            <small class="text-muted">Track your progress with detailed charts and insights</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feature-item mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="feature-icon bg-success text-white rounded-circle me-3">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Workout Tracking</h6>
+                            <small class="text-muted">Log workouts, monitor heart rate, and track calories</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feature-item mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="feature-icon bg-warning text-white rounded-circle me-3">
+                            <i class="fas fa-apple-alt"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Nutrition Management</h6>
+                            <small class="text-muted">Monitor meals, macros, and water intake</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feature-item mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="feature-icon bg-info text-white rounded-circle me-3">
+                            <i class="fas fa-file-export"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Export Reports</h6>
+                            <small class="text-muted">Generate PDF and Excel reports, send via email</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="d-flex align-items-center">
+                        <div class="feature-icon bg-danger text-white rounded-circle me-3">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Personalized Insights</h6>
+                            <small class="text-muted">Get recommendations based on your data</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle password visibility
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    
+    togglePassword.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        const icon = this.querySelector('i');
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    });
+    
+    // Form submission
+    const loginForm = document.getElementById('loginForm');
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+        
+        fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = '/dashboard';
+            } else {
+                alert(data.message || 'Login failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Fallback to regular form submission
+            loginForm.submit();
+        });
+    });
+});
+
+// Demo account functions
+function fillDemo(type) {
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    
+    if (type === 'beginner') {
+        emailInput.value = 'demo@beginner.com';
+        passwordInput.value = 'demo123456';
+    } else if (type === 'advanced') {
+        emailInput.value = 'demo@advanced.com';
+        passwordInput.value = 'demo123456';
+    }
+}
+</script>
+
+<style>
+.min-vh-75 {
+    min-height: 75vh;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+}
+
+.input-group-text {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn-primary {
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.features-preview {
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.feature-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.feature-item {
+    transition: transform 0.2s ease;
+}
+
+.feature-item:hover {
+    transform: translateX(5px);
+}
+
+.btn-outline-info:hover, .btn-outline-success:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s ease;
+}
+</style>
+{% endblock %}

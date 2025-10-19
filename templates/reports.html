@@ -1,0 +1,897 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Lifestyle Analytics Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="welcome-header bg-gradient-primary text-white p-4 rounded-3">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2 class="mb-1">
+                            <i class="fas fa-file-alt me-2"></i>Reports & Export
+                        </h2>
+                        <p class="mb-0 opacity-75">
+                            Generate comprehensive reports and export your fitness data
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div class="report-stats">
+                            <small class="opacity-75">Last generated:</small><br>
+                            <span id="lastReportDate">Never</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card report-card h-100">
+                <div class="card-body text-center">
+                    <div class="report-icon bg-danger text-white rounded-circle mx-auto mb-3">
+                        <i class="fas fa-file-pdf fa-2x"></i>
+                    </div>
+                    <h5 class="card-title">PDF Report</h5>
+                    <p class="card-text text-muted">
+                        Generate a comprehensive PDF report with charts, insights, and recommendations.
+                    </p>
+                    <button class="btn btn-danger btn-lg w-100" onclick="generatePDFReport()">
+                        <i class="fas fa-download me-2"></i>Generate PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card report-card h-100">
+                <div class="card-body text-center">
+                    <div class="report-icon bg-success text-white rounded-circle mx-auto mb-3">
+                        <i class="fas fa-file-excel fa-2x"></i>
+                    </div>
+                    <h5 class="card-title">Excel Export</h5>
+                    <p class="card-text text-muted">
+                        Export your data to Excel with multiple sheets and embedded charts for analysis.
+                    </p>
+                    <button class="btn btn-success btn-lg w-100" onclick="generateExcelReport()">
+                        <i class="fas fa-download me-2"></i>Export Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card report-card h-100">
+                <div class="card-body text-center">
+                    <div class="report-icon bg-info text-white rounded-circle mx-auto mb-3">
+                        <i class="fas fa-envelope fa-2x"></i>
+                    </div>
+                    <h5 class="card-title">Email Report</h5>
+                    <p class="card-text text-muted">
+                        Send detailed reports via email to yourself, trainers, or healthcare providers.
+                    </p>
+                    <button class="btn btn-info btn-lg w-100" data-bs-toggle="modal" data-bs-target="#emailReportModal">
+                        <i class="fas fa-paper-plane me-2"></i>Send Email
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Configuration -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cog me-2 text-primary"></i>Report Configuration
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="reportConfigForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="reportType" class="form-label">Report Type</label>
+                                <select class="form-select" id="reportType" name="reportType">
+                                    <option value="comprehensive">Comprehensive Report</option>
+                                    <option value="workout">Workout Summary Only</option>
+                                    <option value="nutrition">Nutrition Summary Only</option>
+                                    <option value="progress">Progress Report</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="dateRange" class="form-label">Date Range</label>
+                                <select class="form-select" id="dateRange" name="dateRange">
+                                    <option value="7">Last 7 Days</option>
+                                    <option value="30" selected>Last 30 Days</option>
+                                    <option value="90">Last 90 Days</option>
+                                    <option value="365">Last Year</option>
+                                    <option value="custom">Custom Range</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row" id="customDateRange" style="display: none;">
+                            <div class="col-md-6 mb-3">
+                                <label for="startDate" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="startDate" name="startDate">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="endDate" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="endDate" name="endDate">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Include Sections</label>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="includeWorkouts" checked>
+                                        <label class="form-check-label" for="includeWorkouts">
+                                            Workout Data
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="includeNutrition" checked>
+                                        <label class="form-check-label" for="includeNutrition">
+                                            Nutrition Data
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="includeCharts" checked>
+                                        <label class="form-check-label" for="includeCharts">
+                                            Charts & Graphs
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="includeRecommendations" checked>
+                                        <label class="form-check-label" for="includeRecommendations">
+                                            Recommendations
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2 text-primary"></i>Report Preview
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="report-preview">
+                        <div class="preview-item mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="preview-label">
+                                    <i class="fas fa-user me-2 text-muted"></i>User Profile
+                                </span>
+                                <span class="badge bg-success">Included</span>
+                            </div>
+                        </div>
+                        
+                        <div class="preview-item mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="preview-label">
+                                    <i class="fas fa-dumbbell me-2 text-muted"></i>Workout Summary
+                                </span>
+                                <span class="badge bg-success" id="workoutPreview">Included</span>
+                            </div>
+                        </div>
+                        
+                        <div class="preview-item mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="preview-label">
+                                    <i class="fas fa-apple-alt me-2 text-muted"></i>Nutrition Analysis
+                                </span>
+                                <span class="badge bg-success" id="nutritionPreview">Included</span>
+                            </div>
+                        </div>
+                        
+                        <div class="preview-item mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="preview-label">
+                                    <i class="fas fa-chart-bar me-2 text-muted"></i>Visual Charts
+                                </span>
+                                <span class="badge bg-success" id="chartsPreview">Included</span>
+                            </div>
+                        </div>
+                        
+                        <div class="preview-item mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="preview-label">
+                                    <i class="fas fa-lightbulb me-2 text-muted"></i>AI Insights
+                                </span>
+                                <span class="badge bg-success" id="recommendationsPreview">Included</span>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="text-center">
+                            <small class="text-muted">Estimated pages: <strong id="estimatedPages">8-12</strong></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scheduled Reports -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock me-2 text-primary"></i>Scheduled Reports
+                    </h5>
+                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#scheduleReportModal">
+                        <i class="fas fa-plus me-1"></i>Schedule New
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Report Type</th>
+                                    <th>Frequency</th>
+                                    <th>Recipients</th>
+                                    <th>Next Send</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-file-pdf text-danger me-2"></i>
+                                        Weekly Summary
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Weekly</span>
+                                    </td>
+                                    <td>{{ current_user.email }}</td>
+                                    <td>
+                                        <small class="text-muted">Next Monday, 9:00 AM</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Active</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" onclick="editSchedule(1)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger" onclick="deleteSchedule(1)">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-file-excel text-success me-2"></i>
+                                        Monthly Data Export
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Monthly</span>
+                                    </td>
+                                    <td>{{ current_user.email }}</td>
+                                    <td>
+                                        <small class="text-muted">1st of next month</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">Paused</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" onclick="editSchedule(2)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger" onclick="deleteSchedule(2)">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report History -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2 text-primary"></i>Report History
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date Generated</th>
+                                    <th>Report Type</th>
+                                    <th>Format</th>
+                                    <th>Date Range</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportHistoryTable">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        <i class="fas fa-file-alt fa-3x mb-3"></i>
+                                        <br>No reports generated yet
+                                        <br><small>Generate your first report using the options above</small>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Email Report Modal -->
+<div class="modal fade" id="emailReportModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-envelope me-2"></i>Send Email Report
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="emailReportForm">
+                    <div class="mb-3">
+                        <label for="recipientEmail" class="form-label">Recipient Email</label>
+                        <input type="email" class="form-control" id="recipientEmail" name="recipientEmail" 
+                               value="{{ current_user.email }}" required>
+                        <div class="form-text">You can send to multiple emails separated by commas</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="emailSubject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="emailSubject" name="emailSubject" 
+                               value="Your Lifestyle Analytics Report" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="emailMessage" class="form-label">Additional Message</label>
+                        <textarea class="form-control" id="emailMessage" name="emailMessage" rows="3"
+                                  placeholder="Add a personal message (optional)"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="emailFormat" class="form-label">Report Format</label>
+                        <select class="form-select" id="emailFormat" name="emailFormat">
+                            <option value="pdf">PDF Report</option>
+                            <option value="excel">Excel Export</option>
+                            <option value="both">Both PDF and Excel</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-info" onclick="sendEmailReport()">
+                    <i class="fas fa-paper-plane me-2"></i>Send Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Schedule Report Modal -->
+<div class="modal fade" id="scheduleReportModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-clock me-2"></i>Schedule Automatic Report
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="scheduleReportForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="scheduleType" class="form-label">Report Type</label>
+                            <select class="form-select" id="scheduleType" name="scheduleType">
+                                <option value="comprehensive">Comprehensive Report</option>
+                                <option value="workout">Workout Summary</option>
+                                <option value="nutrition">Nutrition Summary</option>
+                                <option value="progress">Progress Report</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="scheduleFrequency" class="form-label">Frequency</label>
+                            <select class="form-select" id="scheduleFrequency" name="scheduleFrequency">
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="scheduleTime" class="form-label">Time</label>
+                            <input type="time" class="form-control" id="scheduleTime" name="scheduleTime" value="09:00">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="scheduleFormat" class="form-label">Format</label>
+                            <select class="form-select" id="scheduleFormat" name="scheduleFormat">
+                                <option value="pdf">PDF Only</option>
+                                <option value="excel">Excel Only</option>
+                                <option value="both">Both Formats</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="scheduleEmails" class="form-label">Recipients</label>
+                        <input type="text" class="form-control" id="scheduleEmails" name="scheduleEmails" 
+                               value="{{ current_user.email }}" required>
+                        <div class="form-text">Multiple emails separated by commas</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="scheduleReport()">
+                    <i class="fas fa-save me-2"></i>Schedule Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize form listeners
+    initializeFormListeners();
+    loadReportHistory();
+});
+
+function initializeFormListeners() {
+    // Date range change listener
+    document.getElementById('dateRange').addEventListener('change', function() {
+        const customRange = document.getElementById('customDateRange');
+        if (this.value === 'custom') {
+            customRange.style.display = 'block';
+        } else {
+            customRange.style.display = 'none';
+        }
+    });
+    
+    // Checkbox listeners for preview
+    const checkboxes = ['includeWorkouts', 'includeNutrition', 'includeCharts', 'includeRecommendations'];
+    checkboxes.forEach(id => {
+        document.getElementById(id).addEventListener('change', updatePreview);
+    });
+}
+
+function updatePreview() {
+    const workouts = document.getElementById('includeWorkouts').checked;
+    const nutrition = document.getElementById('includeNutrition').checked;
+    const charts = document.getElementById('includeCharts').checked;
+    const recommendations = document.getElementById('includeRecommendations').checked;
+    
+    document.getElementById('workoutPreview').textContent = workouts ? 'Included' : 'Excluded';
+    document.getElementById('workoutPreview').className = workouts ? 'badge bg-success' : 'badge bg-secondary';
+    
+    document.getElementById('nutritionPreview').textContent = nutrition ? 'Included' : 'Excluded';
+    document.getElementById('nutritionPreview').className = nutrition ? 'badge bg-success' : 'badge bg-secondary';
+    
+    document.getElementById('chartsPreview').textContent = charts ? 'Included' : 'Excluded';
+    document.getElementById('chartsPreview').className = charts ? 'badge bg-success' : 'badge bg-secondary';
+    
+    document.getElementById('recommendationsPreview').textContent = recommendations ? 'Included' : 'Excluded';
+    document.getElementById('recommendationsPreview').className = recommendations ? 'badge bg-success' : 'badge bg-secondary';
+    
+    // Update estimated pages
+    let pages = 2; // Base pages
+    if (workouts) pages += 2;
+    if (nutrition) pages += 2;
+    if (charts) pages += 3;
+    if (recommendations) pages += 1;
+    
+    document.getElementById('estimatedPages').textContent = `${pages}-${pages + 2}`;
+}
+
+function generatePDFReport() {
+    showLoadingState('Generating PDF report...');
+    
+    fetch('/generate_pdf_report', {
+        method: 'GET'
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.blob();
+        }
+        throw new Error('Failed to generate PDF report');
+    })
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `lifestyle_report_${new Date().toISOString().split('T')[0]}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
+        hideLoadingState();
+        showSuccessMessage('PDF report generated successfully!');
+        addToReportHistory('PDF Report', 'pdf', 'Success');
+    })
+    .catch(error => {
+        hideLoadingState();
+        showErrorMessage('Failed to generate PDF report: ' + error.message);
+    });
+}
+
+function generateExcelReport() {
+    showLoadingState('Generating Excel export...');
+    
+    fetch('/generate_excel_report', {
+        method: 'GET'
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.blob();
+        }
+        throw new Error('Failed to generate Excel report');
+    })
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `lifestyle_data_${new Date().toISOString().split('T')[0]}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
+        hideLoadingState();
+        showSuccessMessage('Excel report generated successfully!');
+        addToReportHistory('Excel Export', 'excel', 'Success');
+    })
+    .catch(error => {
+        hideLoadingState();
+        showErrorMessage('Failed to generate Excel report: ' + error.message);
+    });
+}
+
+function sendEmailReport() {
+    const form = document.getElementById('emailReportForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.recipientEmail) {
+        alert('Please enter recipient email');
+        return;
+    }
+    
+    showLoadingState('Sending email report...');
+    
+    fetch('/send_email_report', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideLoadingState();
+        if (data.success) {
+            showSuccessMessage('Email report sent successfully!');
+            bootstrap.Modal.getInstance(document.getElementById('emailReportModal')).hide();
+            addToReportHistory('Email Report', data.format || 'pdf', 'Sent');
+        } else {
+            showErrorMessage(data.message || 'Failed to send email report');
+        }
+    })
+    .catch(error => {
+        hideLoadingState();
+        showErrorMessage('Failed to send email report: ' + error.message);
+    });
+}
+
+function scheduleReport() {
+    const form = document.getElementById('scheduleReportForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    // Validation
+    if (!data.scheduleEmails) {
+        alert('Please enter recipient emails');
+        return;
+    }
+    
+    showLoadingState('Scheduling report...');
+    
+    // Simulate API call for scheduling
+    setTimeout(() => {
+        hideLoadingState();
+        showSuccessMessage('Report scheduled successfully!');
+        bootstrap.Modal.getInstance(document.getElementById('scheduleReportModal')).hide();
+        
+        // Add to scheduled reports table (in real implementation, this would be from server)
+        addScheduledReport(data);
+    }, 1500);
+}
+
+function loadReportHistory() {
+    // In real implementation, this would fetch from server
+    // For now, we'll show empty state
+    const table = document.getElementById('reportHistoryTable');
+    // table.innerHTML remains as is for empty state
+}
+
+function addToReportHistory(type, format, status) {
+    const table = document.getElementById('reportHistoryTable');
+    const now = new Date();
+    
+    // Remove empty state if it exists
+    if (table.querySelector('td[colspan="6"]')) {
+        table.innerHTML = '';
+    }
+    
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td>${now.toLocaleDateString()} ${now.toLocaleTimeString()}</td>
+        <td>
+            <i class="fas fa-file-${format === 'pdf' ? 'pdf text-danger' : 'excel text-success'} me-2"></i>
+            ${type}
+        </td>
+        <td>
+            <span class="badge bg-${format === 'pdf' ? 'danger' : 'success'}">${format.toUpperCase()}</span>
+        </td>
+        <td>Last 30 Days</td>
+        <td>
+            <span class="badge bg-${status === 'Success' || status === 'Sent' ? 'success' : 'warning'}">${status}</span>
+        </td>
+        <td>
+            <button class="btn btn-outline-primary btn-sm" onclick="downloadReport('${type}', '${format}')">
+                <i class="fas fa-download"></i>
+            </button>
+        </td>
+    `;
+    
+    table.insertBefore(row, table.firstChild);
+}
+
+function addScheduledReport(data) {
+    // In real implementation, this would update the scheduled reports table
+    console.log('Scheduled report:', data);
+}
+
+function editSchedule(id) {
+    alert('Edit schedule functionality coming soon!');
+}
+
+function deleteSchedule(id) {
+    if (confirm('Are you sure you want to delete this scheduled report?')) {
+        alert('Delete schedule functionality coming soon!');
+    }
+}
+
+function downloadReport(type, format) {
+    if (format === 'pdf') {
+        generatePDFReport();
+    } else {
+        generateExcelReport();
+    }
+}
+
+function showLoadingState(message) {
+    // Create loading overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'loadingOverlay';
+    overlay.className = 'loading-overlay';
+    overlay.innerHTML = `
+        <div class="loading-content">
+            <div class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="text-muted">${message}</p>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+}
+
+function hideLoadingState() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.remove();
+    }
+}
+
+function showSuccessMessage(message) {
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-success alert-dismissible fade show position-fixed';
+    alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alert.innerHTML = `
+        <i class="fas fa-check-circle me-2"></i>${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.remove();
+        }
+    }, 5000);
+}
+
+function showErrorMessage(message) {
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-danger alert-dismissible fade show position-fixed';
+    alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alert.innerHTML = `
+        <i class="fas fa-exclamation-circle me-2"></i>${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.remove();
+        }
+    }, 5000);
+}
+</script>
+
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+}
+
+.report-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.report-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+.report-icon {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.preview-item:last-child {
+    border-bottom: none;
+}
+
+.preview-label {
+    font-weight: 500;
+    color: #495057;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.loading-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+}
+
+.modal-content {
+    border: none;
+    border-radius: 15px;
+}
+
+.modal-header {
+    border-radius: 15px 15px 0 0;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.welcome-header {
+    border-radius: 15px;
+}
+
+@media (max-width: 768px) {
+    .report-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .report-icon {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .table-responsive {
+        border-radius: 15px;
+    }
+}
+</style>
+{% endblock %}
