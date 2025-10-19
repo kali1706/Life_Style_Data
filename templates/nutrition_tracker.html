@@ -1,0 +1,473 @@
+{% extends "base.html" %}
+
+{% block title %}Nutrition Tracker - Lifestyle Data Analytics Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2">
+                    <i class="fas fa-apple-alt me-2"></i>Nutrition Tracker
+                </h1>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#nutritionModal">
+                    <i class="fas fa-plus me-2"></i>Log Nutrition
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Nutrition Logs -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-history me-2"></i>Recent Nutrition Logs
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if nutrition_logs %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Meals</th>
+                                        <th>Calories</th>
+                                        <th>Carbs (g)</th>
+                                        <th>Proteins (g)</th>
+                                        <th>Fats (g)</th>
+                                        <th>Water (L)</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in nutrition_logs %}
+                                    <tr>
+                                        <td>{{ log.log_date.strftime('%Y-%m-%d') }}</td>
+                                        <td>{{ log.daily_meals_frequency or 'N/A' }}</td>
+                                        <td>{{ log.calories or 'N/A' }}</td>
+                                        <td>{{ log.carbs or 'N/A' }}</td>
+                                        <td>{{ log.proteins or 'N/A' }}</td>
+                                        <td>{{ log.fats or 'N/A' }}</td>
+                                        <td>{{ "%.1f"|format(log.water_intake) if log.water_intake else 'N/A' }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewNutritionDetails({{ log.id }})">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-apple-alt fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No nutrition logs yet</h5>
+                            <p class="text-muted">Start tracking your nutrition to see your dietary patterns!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Meals -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-utensils me-2"></i>Recent Meals
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if meals %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Meal Name</th>
+                                        <th>Type</th>
+                                        <th>Calories</th>
+                                        <th>Carbs</th>
+                                        <th>Proteins</th>
+                                        <th>Fats</th>
+                                        <th>Healthy</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for meal in meals %}
+                                    <tr>
+                                        <td>{{ meal.meal_date.strftime('%Y-%m-%d') }}</td>
+                                        <td>{{ meal.meal_name or 'N/A' }}</td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ meal.meal_type or 'N/A' }}</span>
+                                        </td>
+                                        <td>{{ meal.calories or 'N/A' }}</td>
+                                        <td>{{ meal.carbs or 'N/A' }}g</td>
+                                        <td>{{ meal.proteins or 'N/A' }}g</td>
+                                        <td>{{ meal.fats or 'N/A' }}g</td>
+                                        <td>
+                                            {% if meal.is_healthy %}
+                                                <i class="fas fa-check-circle text-success"></i>
+                                            {% else %}
+                                                <i class="fas fa-times-circle text-danger"></i>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-utensils fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No meals logged yet</h5>
+                            <p class="text-muted">Start logging your meals to track your nutrition!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Nutrition Modal -->
+<div class="modal fade" id="nutritionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-apple-alt me-2"></i>Log Nutrition
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="nutritionForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="log_date" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="log_date" name="log_date" 
+                                   value="{{ moment().format('YYYY-MM-DD') }}" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="daily_meals_frequency" class="form-label">Meals per Day</label>
+                            <input type="number" class="form-control" id="daily_meals_frequency" name="daily_meals_frequency" 
+                                   min="1" max="10" step="1">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="calories" class="form-label">Total Calories</label>
+                            <input type="number" class="form-control" id="calories" name="calories" 
+                                   min="0" max="10000" step="1">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="water_intake" class="form-label">Water Intake (Liters)</label>
+                            <input type="number" class="form-control" id="water_intake" name="water_intake" 
+                                   min="0" max="10" step="0.1">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="carbs" class="form-label">Carbohydrates (g)</label>
+                            <input type="number" class="form-control" id="carbs" name="carbs" 
+                                   min="0" max="1000" step="1">
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="proteins" class="form-label">Proteins (g)</label>
+                            <input type="number" class="form-control" id="proteins" name="proteins" 
+                                   min="0" max="500" step="1">
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="fats" class="form-label">Fats (g)</label>
+                            <input type="number" class="form-control" id="fats" name="fats" 
+                                   min="0" max="500" step="1">
+                        </div>
+                    </div>
+
+                    <!-- Meals Section -->
+                    <div class="mb-3">
+                        <h6>Individual Meals</h6>
+                        <div id="mealsContainer">
+                            <div class="meal-item border rounded p-3 mb-3">
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label">Meal Name</label>
+                                        <select class="form-select meal-name">
+                                            <option value="">Select Meal</option>
+                                            <option value="Breakfast">Breakfast</option>
+                                            <option value="Lunch">Lunch</option>
+                                            <option value="Dinner">Dinner</option>
+                                            <option value="Snack">Snack</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label">Meal Type</label>
+                                        <select class="form-select meal-type">
+                                            <option value="">Select Type</option>
+                                            <option value="Main">Main</option>
+                                            <option value="Snack">Snack</option>
+                                            <option value="Beverage">Beverage</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 mb-2">
+                                        <label class="form-label">Calories</label>
+                                        <input type="number" class="form-control meal-calories" min="0" max="2000">
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <label class="form-label">Carbs (g)</label>
+                                        <input type="number" class="form-control meal-carbs" min="0" max="500">
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <label class="form-label">Proteins (g)</label>
+                                        <input type="number" class="form-control meal-proteins" min="0" max="200">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 mb-2">
+                                        <label class="form-label">Fats (g)</label>
+                                        <input type="number" class="form-control meal-fats" min="0" max="200">
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <label class="form-label">Sugar (g)</label>
+                                        <input type="number" class="form-control meal-sugar" min="0" max="200">
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <label class="form-label">Sodium (mg)</label>
+                                        <input type="number" class="form-control meal-sodium" min="0" max="5000">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label">Diet Type</label>
+                                        <select class="form-select meal-diet">
+                                            <option value="">Select Diet</option>
+                                            <option value="Balanced">Balanced</option>
+                                            <option value="Keto">Keto</option>
+                                            <option value="Vegan">Vegan</option>
+                                            <option value="Vegetarian">Vegetarian</option>
+                                            <option value="Paleo">Paleo</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label">Cooking Method</label>
+                                        <select class="form-select meal-cooking">
+                                            <option value="">Select Method</option>
+                                            <option value="Boiled">Boiled</option>
+                                            <option value="Fried">Fried</option>
+                                            <option value="Grilled">Grilled</option>
+                                            <option value="Baked">Baked</option>
+                                            <option value="Raw">Raw</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input meal-healthy" type="checkbox" checked>
+                                    <label class="form-check-label">Healthy Meal</label>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-danger remove-meal">
+                                    <i class="fas fa-trash"></i> Remove
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-success btn-sm" id="addMeal">
+                            <i class="fas fa-plus me-2"></i>Add Meal
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save me-2"></i>Log Nutrition
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Set today's date as default
+document.getElementById('log_date').value = new Date().toISOString().split('T')[0];
+
+// Add meal functionality
+document.getElementById('addMeal').addEventListener('click', function() {
+    const container = document.getElementById('mealsContainer');
+    const mealItem = document.createElement('div');
+    mealItem.className = 'meal-item border rounded p-3 mb-3';
+    mealItem.innerHTML = `
+        <div class="row">
+            <div class="col-md-6 mb-2">
+                <label class="form-label">Meal Name</label>
+                <select class="form-select meal-name">
+                    <option value="">Select Meal</option>
+                    <option value="Breakfast">Breakfast</option>
+                    <option value="Lunch">Lunch</option>
+                    <option value="Dinner">Dinner</option>
+                    <option value="Snack">Snack</option>
+                </select>
+            </div>
+            <div class="col-md-6 mb-2">
+                <label class="form-label">Meal Type</label>
+                <select class="form-select meal-type">
+                    <option value="">Select Type</option>
+                    <option value="Main">Main</option>
+                    <option value="Snack">Snack</option>
+                    <option value="Beverage">Beverage</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-2">
+                <label class="form-label">Calories</label>
+                <input type="number" class="form-control meal-calories" min="0" max="2000">
+            </div>
+            <div class="col-md-4 mb-2">
+                <label class="form-label">Carbs (g)</label>
+                <input type="number" class="form-control meal-carbs" min="0" max="500">
+            </div>
+            <div class="col-md-4 mb-2">
+                <label class="form-label">Proteins (g)</label>
+                <input type="number" class="form-control meal-proteins" min="0" max="200">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-2">
+                <label class="form-label">Fats (g)</label>
+                <input type="number" class="form-control meal-fats" min="0" max="200">
+            </div>
+            <div class="col-md-4 mb-2">
+                <label class="form-label">Sugar (g)</label>
+                <input type="number" class="form-control meal-sugar" min="0" max="200">
+            </div>
+            <div class="col-md-4 mb-2">
+                <label class="form-label">Sodium (mg)</label>
+                <input type="number" class="form-control meal-sodium" min="0" max="5000">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-2">
+                <label class="form-label">Diet Type</label>
+                <select class="form-select meal-diet">
+                    <option value="">Select Diet</option>
+                    <option value="Balanced">Balanced</option>
+                    <option value="Keto">Keto</option>
+                    <option value="Vegan">Vegan</option>
+                    <option value="Vegetarian">Vegetarian</option>
+                    <option value="Paleo">Paleo</option>
+                </select>
+            </div>
+            <div class="col-md-6 mb-2">
+                <label class="form-label">Cooking Method</label>
+                <select class="form-select meal-cooking">
+                    <option value="">Select Method</option>
+                    <option value="Boiled">Boiled</option>
+                    <option value="Fried">Fried</option>
+                    <option value="Grilled">Grilled</option>
+                    <option value="Baked">Baked</option>
+                    <option value="Raw">Raw</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input meal-healthy" type="checkbox" checked>
+            <label class="form-check-label">Healthy Meal</label>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-danger remove-meal">
+            <i class="fas fa-trash"></i> Remove
+        </button>
+    `;
+    container.appendChild(mealItem);
+});
+
+// Remove meal functionality
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-meal')) {
+        e.target.closest('.meal-item').remove();
+    }
+});
+
+// Nutrition form submission
+document.getElementById('nutritionForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    
+    // Collect meals data
+    const meals = [];
+    document.querySelectorAll('.meal-item').forEach(item => {
+        const meal = {
+            meal_name: item.querySelector('.meal-name').value,
+            meal_type: item.querySelector('.meal-type').value,
+            calories: parseInt(item.querySelector('.meal-calories').value) || 0,
+            carbs: parseInt(item.querySelector('.meal-carbs').value) || 0,
+            proteins: parseInt(item.querySelector('.meal-proteins').value) || 0,
+            fats: parseInt(item.querySelector('.meal-fats').value) || 0,
+            sugar: parseInt(item.querySelector('.meal-sugar').value) || 0,
+            sodium: parseInt(item.querySelector('.meal-sodium').value) || 0,
+            diet_type: item.querySelector('.meal-diet').value,
+            cooking_method: item.querySelector('.meal-cooking').value,
+            is_healthy: item.querySelector('.meal-healthy').checked
+        };
+        if (meal.meal_name) {
+            meals.push(meal);
+        }
+    });
+    
+    data.meals = meals;
+    
+    try {
+        const response = await fetch('{{ url_for("main.log_nutrition") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showAlert('success', result.message);
+            bootstrap.Modal.getInstance(document.getElementById('nutritionModal')).hide();
+            location.reload(); // Refresh to show new nutrition log
+        } else {
+            showAlert('error', result.error || 'Failed to log nutrition');
+        }
+    } catch (error) {
+        showAlert('error', 'An error occurred. Please try again.');
+    }
+});
+
+function viewNutritionDetails(nutritionId) {
+    // This would open a modal with detailed nutrition information
+    alert('Nutrition details for ID: ' + nutritionId);
+}
+
+function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type === 'error' ? 'danger' : 'success'} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    const container = document.querySelector('.container-fluid');
+    container.insertBefore(alertDiv, container.firstChild);
+}
+</script>
+{% endblock %}

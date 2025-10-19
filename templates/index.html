@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - Lifestyle Data Analytics Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="row align-items-center min-vh-75">
+        <div class="col-lg-6">
+            <h1 class="display-4 fw-bold text-primary mb-4">
+                Transform Your Lifestyle with Data Analytics
+            </h1>
+            <p class="lead mb-4">
+                Track your fitness, nutrition, and health metrics with our comprehensive analytics platform. 
+                Get personalized insights and achieve your wellness goals.
+            </p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                <a href="{{ url_for('main.register') }}" class="btn btn-primary btn-lg px-4 me-md-2">
+                    <i class="fas fa-rocket me-2"></i>Get Started
+                </a>
+                <a href="{{ url_for('main.login') }}" class="btn btn-outline-primary btn-lg px-4">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="text-center">
+                <i class="fas fa-chart-line display-1 text-primary opacity-75"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row py-5">
+        <div class="col-12">
+            <h2 class="text-center mb-5">Key Features</h2>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-dumbbell fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Workout Tracking</h5>
+                    <p class="card-text">
+                        Log your workouts, track calories burned, monitor heart rate, and analyze performance trends.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-apple-alt fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">Nutrition Analysis</h5>
+                    <p class="card-text">
+                        Track your daily meals, monitor macro nutrients, and get personalized nutrition insights.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-bar fa-3x text-info mb-3"></i>
+                    <h5 class="card-title">Advanced Analytics</h5>
+                    <p class="card-text">
+                        Comprehensive dashboards with charts, trends, and actionable insights for your health journey.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Fields Section -->
+    <div class="row py-5 bg-light rounded">
+        <div class="col-12">
+            <h2 class="text-center mb-5">Comprehensive Data Tracking</h2>
+        </div>
+        <div class="col-md-6">
+            <h4><i class="fas fa-user text-primary me-2"></i>User Profile</h4>
+            <ul class="list-unstyled">
+                <li><i class="fas fa-check text-success me-2"></i>Age, Gender, Weight, Height</li>
+                <li><i class="fas fa-check text-success me-2"></i>BMI Calculation & Analysis</li>
+                <li><i class="fas fa-check text-success me-2"></i>Experience Level Tracking</li>
+                <li><i class="fas fa-check text-success me-2"></i>Body Fat Percentage</li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h4><i class="fas fa-heartbeat text-danger me-2"></i>Health Metrics</h4>
+            <ul class="list-unstyled">
+                <li><i class="fas fa-check text-success me-2"></i>Heart Rate Monitoring</li>
+                <li><i class="fas fa-check text-success me-2"></i>Calorie Burn Tracking</li>
+                <li><i class="fas fa-check text-success me-2"></i>Workout Duration & Frequency</li>
+                <li><i class="fas fa-check text-success me-2"></i>Consistency Scoring</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Report Generation Section -->
+    <div class="row py-5">
+        <div class="col-12">
+            <h2 class="text-center mb-5">Professional Reports</h2>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="text-center">
+                <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
+                <h5>PDF Reports</h5>
+                <p>Detailed weekly/monthly analysis with charts and recommendations</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="text-center">
+                <i class="fas fa-file-excel fa-3x text-success mb-3"></i>
+                <h5>Excel Export</h5>
+                <p>Raw data export with embedded charts and multiple sheets</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="text-center">
+                <i class="fas fa-envelope fa-3x text-primary mb-3"></i>
+                <h5>Email Reports</h5>
+                <p>Automated email delivery with scheduled reports</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="row py-5 bg-primary text-white rounded">
+        <div class="col-12 text-center">
+            <h2 class="mb-4">Ready to Start Your Health Journey?</h2>
+            <p class="lead mb-4">Join thousands of users who are already tracking their lifestyle data</p>
+            <a href="{{ url_for('main.register') }}" class="btn btn-light btn-lg">
+                <i class="fas fa-user-plus me-2"></i>Create Your Account
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.min-vh-75 {
+    min-height: 75vh;
+}
+</style>
+{% endblock %}
