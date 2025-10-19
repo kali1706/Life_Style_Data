@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Lifestyle Data Analytics Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 mb-1">Welcome back, {{ current_user.username }}!</h1>
+                    <p class="text-muted">Here's your lifestyle data overview</p>
+                </div>
+                <div>
+                    <span class="badge bg-{{ 'success' if data.bmi and 18.5 <= data.bmi <= 24.9 else 'warning' }} fs-6">
+                        BMI: {{ "%.1f"|format(data.bmi) if data.bmi else 'N/A' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-white-50">Total Workouts</h6>
+                            <h3 class="mb-0">{{ data.total_workouts }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-dumbbell fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-white-50">Calories Burned</h6>
+                            <h3 class="mb-0">{{ data.total_calories_burned }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-fire fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-white-50">Avg Session</h6>
+                            <h3 class="mb-0">{{ data.avg_session_duration }}m</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-clock fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-white-50">Consistency</h6>
+                            <h3 class="mb-0">{{ data.consistency_score }}%</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-chart-line fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line me-2"></i>BMI Trend
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="bmiChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>Macro Distribution
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="macroChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calorie Balance Chart -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-balance-scale me-2"></i>Calorie Balance (Last 7 Days)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="calorieChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Insights Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>Personalized Insights
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if data.insights %}
+                        <div class="row">
+                            {% for insight in data.insights %}
+                            <div class="col-md-6 mb-2">
+                                <div class="d-flex align-items-start">
+                                    <i class="fas fa-{{ 'check-circle text-success' if insight.startswith('✓') else 'exclamation-triangle text-warning' }} me-2 mt-1"></i>
+                                    <span>{{ insight }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Complete your profile and start logging data to get personalized insights!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-dumbbell fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Log Workout</h5>
+                    <p class="card-text">Record your exercise session and track performance.</p>
+                    <a href="{{ url_for('main.workout_tracker') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add Workout
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-apple-alt fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">Log Nutrition</h5>
+                    <p class="card-text">Track your meals and nutritional intake.</p>
+                    <a href="{{ url_for('main.nutrition_tracker') }}" class="btn btn-success">
+                        <i class="fas fa-plus me-2"></i>Add Meal
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-bar fa-3x text-info mb-3"></i>
+                    <h5 class="card-title">View Analytics</h5>
+                    <p class="card-text">Explore detailed analytics and trends.</p>
+                    <a href="{{ url_for('main.analytics') }}" class="btn btn-info">
+                        <i class="fas fa-chart-line me-2"></i>View Analytics
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// BMI Trend Chart
+const bmiCtx = document.getElementById('bmiChart').getContext('2d');
+new Chart(bmiCtx, {
+    type: 'line',
+    data: {
+        labels: {{ data.bmi_trend.labels | tojson }},
+        datasets: [{
+            label: 'BMI',
+            data: {{ data.bmi_trend.data | tojson }},
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.1)',
+            tension: 0.1,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: false,
+                title: {
+                    display: true,
+                    text: 'BMI Value'
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+
+// Macro Distribution Chart
+const macroCtx = document.getElementById('macroChart').getContext('2d');
+new Chart(macroCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Carbs', 'Proteins', 'Fats'],
+        datasets: [{
+            data: [
+                {{ data.macro_avg.carbs }},
+                {{ data.macro_avg.proteins }},
+                {{ data.macro_avg.fats }}
+            ],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.8)',
+                'rgba(54, 162, 235, 0.8)',
+                'rgba(255, 205, 86, 0.8)'
+            ],
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Calorie Balance Chart
+const calorieCtx = document.getElementById('calorieChart').getContext('2d');
+new Chart(calorieCtx, {
+    type: 'bar',
+    data: {
+        labels: {{ data.calorie_balance.labels | tojson }},
+        datasets: {{ data.calorie_balance.datasets | tojson }}
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Calories'
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top'
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

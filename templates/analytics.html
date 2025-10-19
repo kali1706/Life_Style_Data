@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - Lifestyle Data Analytics Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h2 mb-4">
+                <i class="fas fa-chart-bar me-2"></i>Analytics Dashboard
+            </h1>
+        </div>
+    </div>
+
+    <!-- BMI Trend Chart -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line me-2"></i>BMI Trend (Last 30 Days)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="bmiTrendChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calorie Balance Chart -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-balance-scale me-2"></i>Calorie Balance (Last 14 Days)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="calorieBalanceChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workout Distribution and Heart Rate Trends -->
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>Workout Type Distribution
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="workoutDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-heartbeat me-2"></i>Heart Rate Trends
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="heartRateChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-fire fa-2x mb-2"></i>
+                    <h6>Total Calories Burned</h6>
+                    <h3 id="totalCaloriesBurned">-</h3>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-utensils fa-2x mb-2"></i>
+                    <h6>Total Calories Consumed</h6>
+                    <h3 id="totalCaloriesConsumed">-</h3>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-dumbbell fa-2x mb-2"></i>
+                    <h6>Total Workouts</h6>
+                    <h3 id="totalWorkouts">-</h3>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-line fa-2x mb-2"></i>
+                    <h6>Consistency Score</h6>
+                    <h3 id="consistencyScore">-</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Analytics Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-table me-2"></i>Detailed Analytics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>Current Value</th>
+                                    <th>Target Range</th>
+                                    <th>Status</th>
+                                    <th>Trend</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>BMI</td>
+                                    <td id="currentBMI">-</td>
+                                    <td>18.5 - 24.9</td>
+                                    <td id="bmiStatus">-</td>
+                                    <td id="bmiTrend">-</td>
+                                </tr>
+                                <tr>
+                                    <td>Calorie Balance</td>
+                                    <td id="currentCalorieBalance">-</td>
+                                    <td>-200 to +200</td>
+                                    <td id="calorieBalanceStatus">-</td>
+                                    <td id="calorieBalanceTrend">-</td>
+                                </tr>
+                                <tr>
+                                    <td>Workout Frequency</td>
+                                    <td id="currentWorkoutFreq">-</td>
+                                    <td>3-5 days/week</td>
+                                    <td id="workoutFreqStatus">-</td>
+                                    <td id="workoutFreqTrend">-</td>
+                                </tr>
+                                <tr>
+                                    <td>Water Intake</td>
+                                    <td id="currentWaterIntake">-</td>
+                                    <td>2.5+ L/day</td>
+                                    <td id="waterIntakeStatus">-</td>
+                                    <td id="waterIntakeTrend">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Load dashboard data
+async function loadDashboardData() {
+    try {
+        const response = await fetch('{{ url_for("main.api_dashboard_data") }}');
+        const data = await response.json();
+        
+        // Update summary cards
+        document.getElementById('totalCaloriesBurned').textContent = data.total_calories_burned || 0;
+        document.getElementById('totalCaloriesConsumed').textContent = data.total_calories_consumed || 0;
+        document.getElementById('totalWorkouts').textContent = data.total_workouts || 0;
+        document.getElementById('consistencyScore').textContent = '85%'; // Placeholder
+        
+        // Update detailed analytics
+        document.getElementById('currentBMI').textContent = data.bmi ? data.bmi.toFixed(1) : 'N/A';
+        document.getElementById('currentCalorieBalance').textContent = data.calorie_balance || 0;
+        
+        // Update status indicators
+        updateStatusIndicator('bmiStatus', data.bmi, 18.5, 24.9);
+        updateStatusIndicator('calorieBalanceStatus', data.calorie_balance, -200, 200);
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+    }
+}
+
+function updateStatusIndicator(elementId, value, min, max) {
+    const element = document.getElementById(elementId);
+    if (value === null || value === undefined) {
+        element.innerHTML = '<span class="badge bg-secondary">N/A</span>';
+        return;
+    }
+    
+    if (value >= min && value <= max) {
+        element.innerHTML = '<span class="badge bg-success">Good</span>';
+    } else {
+        element.innerHTML = '<span class="badge bg-warning">Needs Attention</span>';
+    }
+}
+
+// BMI Trend Chart
+const bmiCtx = document.getElementById('bmiTrendChart').getContext('2d');
+new Chart(bmiCtx, {
+    type: 'line',
+    data: {
+        labels: {{ bmi_trend.labels | tojson }},
+        datasets: [{
+            label: 'BMI',
+            data: {{ bmi_trend.data | tojson }},
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.1)',
+            tension: 0.1,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: false,
+                title: {
+                    display: true,
+                    text: 'BMI Value'
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+
+// Calorie Balance Chart
+const calorieCtx = document.getElementById('calorieBalanceChart').getContext('2d');
+new Chart(calorieCtx, {
+    type: 'bar',
+    data: {
+        labels: {{ calorie_balance.labels | tojson }},
+        datasets: {{ calorie_balance.datasets | tojson }}
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Calories'
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top'
+            }
+        }
+    }
+});
+
+// Workout Distribution Chart
+const workoutCtx = document.getElementById('workoutDistributionChart').getContext('2d');
+new Chart(workoutCtx, {
+    type: 'doughnut',
+    data: {
+        labels: {{ workout_distribution.labels | tojson }},
+        datasets: [{
+            data: {{ workout_distribution.data | tojson }},
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.8)',
+                'rgba(54, 162, 235, 0.8)',
+                'rgba(255, 205, 86, 0.8)',
+                'rgba(75, 192, 192, 0.8)',
+                'rgba(153, 102, 255, 0.8)',
+                'rgba(255, 159, 64, 0.8)'
+            ],
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Heart Rate Chart
+const hrCtx = document.getElementById('heartRateChart').getContext('2d');
+new Chart(hrCtx, {
+    type: 'line',
+    data: {
+        labels: {{ hr_trend.labels | tojson }},
+        datasets: {{ hr_trend.datasets | tojson }}
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+            y: {
+                beginAtZero: false,
+                title: {
+                    display: true,
+                    text: 'Heart Rate (BPM)'
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top'
+            }
+        }
+    }
+});
+
+// Load data when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadDashboardData();
+});
+</script>
+{% endblock %}

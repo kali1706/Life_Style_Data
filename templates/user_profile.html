@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Lifestyle Data Analytics Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-user-edit me-2"></i>User Profile
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form id="profileForm">
+                        <div class="row">
+                            <!-- Basic Information -->
+                            <div class="col-md-6 mb-3">
+                                <label for="age" class="form-label">Age</label>
+                                <input type="number" class="form-control" id="age" name="age" 
+                                       value="{{ user.age or '' }}" min="1" max="120">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select class="form-select" id="gender" name="gender">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male" {{ 'selected' if user.gender == 'Male' else '' }}>Male</option>
+                                    <option value="Female" {{ 'selected' if user.gender == 'Female' else '' }}>Female</option>
+                                    <option value="Other" {{ 'selected' if user.gender == 'Other' else '' }}>Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="weight" class="form-label">Weight (kg)</label>
+                                <input type="number" class="form-control" id="weight" name="weight" 
+                                       value="{{ user.weight or '' }}" min="1" max="500" step="0.1">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="height" class="form-label">Height (m)</label>
+                                <input type="number" class="form-control" id="height" name="height" 
+                                       value="{{ user.height or '' }}" min="0.5" max="3" step="0.01">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="experience_level" class="form-label">Experience Level</label>
+                                <select class="form-select" id="experience_level" name="experience_level">
+                                    <option value="">Select Experience Level</option>
+                                    <option value="1" {{ 'selected' if user.experience_level == 1 else '' }}>Beginner</option>
+                                    <option value="2" {{ 'selected' if user.experience_level == 2 else '' }}>Intermediate</option>
+                                    <option value="3" {{ 'selected' if user.experience_level == 3 else '' }}>Advanced</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="fat_percentage" class="form-label">Body Fat Percentage</label>
+                                <input type="number" class="form-control" id="fat_percentage" name="fat_percentage" 
+                                       value="{{ user.fat_percentage or '' }}" min="1" max="50" step="0.1">
+                            </div>
+                        </div>
+
+                        <!-- BMI Display -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading">
+                                        <i class="fas fa-calculator me-2"></i>BMI Information
+                                    </h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <strong>Current BMI:</strong> 
+                                            <span id="currentBMI">{{ "%.2f"|format(user.bmi) if user.bmi else 'Not calculated' }}</span>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <strong>Category:</strong> 
+                                            <span id="bmiCategory">{{ user.get_bmi_category() if user.bmi else 'Unknown' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account Information (Read-only) -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Username</label>
+                                <input type="text" class="form-control" value="{{ user.username }}" readonly>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" value="{{ user.email }}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Member Since</label>
+                                <input type="text" class="form-control" 
+                                       value="{{ user.created_at.strftime('%B %d, %Y') if user.created_at else 'N/A' }}" readonly>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Last Login</label>
+                                <input type="text" class="form-control" 
+                                       value="{{ user.last_login.strftime('%B %d, %Y at %I:%M %p') if user.last_login else 'Never' }}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Update Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Health Metrics Summary -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-heartbeat me-2"></i>Health Metrics Summary
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="p-3 bg-light rounded">
+                                <i class="fas fa-weight fa-2x text-primary mb-2"></i>
+                                <h6>Weight</h6>
+                                <h4>{{ "%.1f"|format(user.weight) if user.weight else 'N/A' }} kg</h4>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="p-3 bg-light rounded">
+                                <i class="fas fa-ruler-vertical fa-2x text-info mb-2"></i>
+                                <h6>Height</h6>
+                                <h4>{{ "%.2f"|format(user.height) if user.height else 'N/A' }} m</h4>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="p-3 bg-light rounded">
+                                <i class="fas fa-calculator fa-2x text-success mb-2"></i>
+                                <h6>BMI</h6>
+                                <h4>{{ "%.1f"|format(user.bmi) if user.bmi else 'N/A' }}</h4>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="p-3 bg-light rounded">
+                                <i class="fas fa-percentage fa-2x text-warning mb-2"></i>
+                                <h6>Body Fat</h6>
+                                <h4>{{ "%.1f"|format(user.fat_percentage) if user.fat_percentage else 'N/A' }}%</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('profileForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    
+    try {
+        const response = await fetch('{{ url_for("main.profile") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Update BMI display
+            document.getElementById('currentBMI').textContent = result.bmi ? result.bmi.toFixed(2) : 'Not calculated';
+            
+            // Update BMI category
+            const bmi = result.bmi;
+            let category = 'Unknown';
+            if (bmi) {
+                if (bmi < 18.5) category = 'Underweight';
+                else if (bmi < 25) category = 'Normal';
+                else if (bmi < 30) category = 'Overweight';
+                else category = 'Obese';
+            }
+            document.getElementById('bmiCategory').textContent = category;
+            
+            showAlert('success', 'Profile updated successfully!');
+        } else {
+            showAlert('error', result.error || 'Failed to update profile');
+        }
+    } catch (error) {
+        showAlert('error', 'An error occurred. Please try again.');
+    }
+});
+
+// Auto-calculate BMI when weight or height changes
+document.getElementById('weight').addEventListener('input', calculateBMI);
+document.getElementById('height').addEventListener('input', calculateBMI);
+
+function calculateBMI() {
+    const weight = parseFloat(document.getElementById('weight').value);
+    const height = parseFloat(document.getElementById('height').value);
+    
+    if (weight && height && height > 0) {
+        const bmi = weight / (height * height);
+        document.getElementById('currentBMI').textContent = bmi.toFixed(2);
+        
+        let category = 'Unknown';
+        if (bmi < 18.5) category = 'Underweight';
+        else if (bmi < 25) category = 'Normal';
+        else if (bmi < 30) category = 'Overweight';
+        else category = 'Obese';
+        
+        document.getElementById('bmiCategory').textContent = category;
+    }
+}
+
+function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type === 'error' ? 'danger' : 'success'} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    const container = document.querySelector('.container');
+    container.insertBefore(alertDiv, container.firstChild);
+}
+</script>
+{% endblock %}
