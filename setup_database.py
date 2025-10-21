@@ -185,7 +185,7 @@ def main():
         print(f"\n❌ Unexpected error: {e}")
         return False
     finally:
-        if 'connection' in locals():
+        if 'connection' in locals() and connection is not None:
             connection.close()
 
 if __name__ == '__main__':
