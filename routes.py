@@ -153,7 +153,7 @@ def dashboard():
 def profile():
     if request.method == 'POST':
         data = request.get_json() if request.is_json else request.form
-        
+
         # Update user profile
         current_user.age = int(data.get('age', 0)) or None
         current_user.gender = data.get('gender')
@@ -161,21 +161,26 @@ def profile():
         current_user.height = float(data.get('height', 0)) or None
         current_user.experience_level = int(data.get('experience_level', 0)) or None
         current_user.fat_percentage = float(data.get('fat_percentage', 0)) or None
-        
+
+        # Update email preferences
+        current_user.daily_reports = data.get('daily_reports', False) in ['true', True]
+        current_user.weekly_reports = data.get('weekly_reports', True) in ['true', True]
+        current_user.monthly_reports = data.get('monthly_reports', True) in ['true', True]
+
         # Calculate BMI
         if current_user.weight and current_user.height:
             current_user.bmi = AnalyticsCalculator.calculate_bmi(
                 current_user.weight, current_user.height
             )
-        
+
         db.session.commit()
-        
+
         if request.is_json:
             return jsonify({'success': True, 'bmi': current_user.bmi})
         else:
             flash('Profile updated successfully!', 'success')
             return redirect(url_for('main.profile'))
-    
+
     return render_template('user_profile.html', user=current_user)
 
 @main.route('/workout_tracker')

@@ -1,9 +1,11 @@
 from flask import Flask, render_template
 from flask_login import LoginManager
-from models import db, User
+from models import db, User, Exercise
 from routes import main
 from config import Config
+from email_service import EmailService
 import os
+import pymysql
 
 def create_app():
     app = Flask(__name__)
@@ -25,15 +27,16 @@ def create_app():
     
     # Register blueprints
     app.register_blueprint(main)
-    
+
+    # Initialize email service
+    email_service = EmailService(app)
+
     # Create database tables
     with app.app_context():
         db.create_all()
-        
+
         # Add sample exercises if database is empty
-        if not User.query.first():
-            from models import Exercise
-            
+        if not Exercise.query.first():
             sample_exercises = [
                 {
                     'name': 'Push-ups',
@@ -91,11 +94,11 @@ def create_app():
                     'instructions': 'Start in plank, alternate bringing knees to chest rapidly'
                 }
             ]
-            
+
             for exercise_data in sample_exercises:
                 exercise = Exercise(**exercise_data)
                 db.session.add(exercise)
-            
+
             db.session.commit()
             print("Sample exercises added to database")
     

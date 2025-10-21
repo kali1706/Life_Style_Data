@@ -25,7 +25,12 @@ class User(UserMixin, db.Model):
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime)
-    
+
+    # Email preferences
+    daily_reports = db.Column(db.Boolean, default=False)
+    weekly_reports = db.Column(db.Boolean, default=True)
+    monthly_reports = db.Column(db.Boolean, default=True)
+
     # Relationships
     workouts = db.relationship('WorkoutLog', backref='user', lazy='dynamic', cascade='all, delete-orphan')
     nutrition_logs = db.relationship('NutritionLog', backref='user', lazy='dynamic', cascade='all, delete-orphan')
