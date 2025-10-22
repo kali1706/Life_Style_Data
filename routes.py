@@ -356,6 +356,12 @@ def analytics():
                          workout_distribution=workout_distribution,
                          hr_trend=hr_trend)
 
+@main.route('/advanced-analytics')
+@login_required
+def advanced_analytics():
+    """Advanced analytics dashboard with interactive tabs and modern UI"""
+    return render_template('advanced_analytics.html')
+
 @main.route('/reports')
 @login_required
 def reports():

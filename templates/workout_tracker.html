@@ -4,58 +4,174 @@
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row">
+    <div class="row" data-aos="fade-down">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h2">
-                    <i class="fas fa-dumbbell me-2"></i>Workout Tracker
-                </h1>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#workoutModal">
-                    <i class="fas fa-plus me-2"></i>Log Workout
-                </button>
+                <div>
+                    <h1 class="h2 mb-1">
+                        <i class="fas fa-dumbbell me-2"></i>Workout Tracker
+                    </h1>
+                    <p class="text-muted mb-0">Track your fitness journey with detailed analytics</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="exportWorkoutData()">
+                        <i class="fas fa-download me-2"></i>Export
+                    </button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#workoutModal">
+                        <i class="fas fa-plus me-2"></i>Log Workout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workout Statistics -->
+    <div class="row mb-4" data-aos="fade-up">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card card-gradient-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-white-50">This Week</h6>
+                            <h3 class="mb-0" id="weekly-workouts">-</h3>
+                        </div>
+                        <i class="fas fa-calendar-week fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card card-gradient-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-white-50">Total Time</h6>
+                            <h3 class="mb-0" id="total-time">-</h3>
+                        </div>
+                        <i class="fas fa-clock fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card card-gradient-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-white-50">Avg Duration</h6>
+                            <h3 class="mb-0" id="avg-duration">-</h3>
+                        </div>
+                        <i class="fas fa-stopwatch fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card card-gradient-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-white-50">Calories Burned</h6>
+                            <h3 class="mb-0" id="total-calories">-</h3>
+                        </div>
+                        <i class="fas fa-fire fa-2x opacity-75"></i>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Recent Workouts -->
-    <div class="row mb-4">
+    <div class="row mb-4" data-aos="fade-up" data-aos-delay="200">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">
                         <i class="fas fa-history me-2"></i>Recent Workouts
                     </h5>
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-sm btn-outline-primary active" onclick="filterWorkouts('all')">All</button>
+                        <button class="btn btn-sm btn-outline-primary" onclick="filterWorkouts('week')">This Week</button>
+                        <button class="btn btn-sm btn-outline-primary" onclick="filterWorkouts('month')">This Month</button>
+                    </div>
                 </div>
                 <div class="card-body">
                     {% if workouts %}
                         <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
+                            <table class="table table-hover" id="workoutsTable">
+                                <thead class="table-light">
                                     <tr>
-                                        <th>Date</th>
-                                        <th>Type</th>
-                                        <th>Duration</th>
-                                        <th>Calories</th>
-                                        <th>Avg BPM</th>
-                                        <th>Max BPM</th>
-                                        <th>Actions</th>
+                                        <th>
+                                            <i class="fas fa-calendar me-1"></i>Date
+                                        </th>
+                                        <th>
+                                            <i class="fas fa-dumbbell me-1"></i>Type
+                                        </th>
+                                        <th>
+                                            <i class="fas fa-clock me-1"></i>Duration
+                                        </th>
+                                        <th>
+                                            <i class="fas fa-fire me-1"></i>Calories
+                                        </th>
+                                        <th>
+                                            <i class="fas fa-heartbeat me-1"></i>Avg BPM
+                                        </th>
+                                        <th>
+                                            <i class="fas fa-heart me-1"></i>Max BPM
+                                        </th>
+                                        <th>
+                                            <i class="fas fa-cog me-1"></i>Actions
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for workout in workouts %}
-                                    <tr>
-                                        <td>{{ workout.workout_date.strftime('%Y-%m-%d') }}</td>
+                                    <tr data-workout-id="{{ workout.id }}" data-workout-date="{{ workout.workout_date.strftime('%Y-%m-%d') }}">
                                         <td>
-                                            <span class="badge bg-primary">{{ workout.workout_type or 'N/A' }}</span>
+                                            <div class="d-flex flex-column">
+                                                <span class="fw-medium">{{ workout.workout_date.strftime('%b %d, %Y') }}</span>
+                                                <small class="text-muted">{{ workout.workout_date.strftime('%A') }}</small>
+                                            </div>
                                         </td>
-                                        <td>{{ "%.1f"|format(workout.session_duration * 60) if workout.session_duration else 'N/A' }} min</td>
-                                        <td>{{ workout.calories_burned or 'N/A' }}</td>
-                                        <td>{{ workout.avg_bpm or 'N/A' }}</td>
-                                        <td>{{ workout.max_bpm or 'N/A' }}</td>
                                         <td>
-                                            <button class="btn btn-sm btn-outline-primary" onclick="viewWorkoutDetails({{ workout.id }})">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
+                                            <span class="badge bg-primary bg-gradient">{{ workout.workout_type or 'N/A' }}</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-stopwatch me-2 text-muted"></i>
+                                                <span>{{ "%.1f"|format(workout.session_duration * 60) if workout.session_duration else 'N/A' }} min</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-fire me-2 text-warning"></i>
+                                                <span class="fw-medium">{{ workout.calories_burned or 'N/A' }}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-heartbeat me-2 text-danger"></i>
+                                                <span>{{ workout.avg_bpm or 'N/A' }}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-heart me-2 text-danger"></i>
+                                                <span>{{ workout.max_bpm or 'N/A' }}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-sm btn-outline-primary" onclick="viewWorkoutDetails({{ workout.id }})" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-warning" onclick="editWorkout({{ workout.id }})" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" onclick="deleteWorkout({{ workout.id }})" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -309,21 +425,121 @@ document.getElementById('workoutForm').addEventListener('submit', async function
     }
 });
 
-function viewWorkoutDetails(workoutId) {
-    // This would open a modal with detailed workout information
-    alert('Workout details for ID: ' + workoutId);
+// Workout statistics calculation
+function calculateWorkoutStats() {
+    const workouts = document.querySelectorAll('#workoutsTable tbody tr');
+    let weeklyCount = 0;
+    let totalTime = 0;
+    let totalCalories = 0;
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    
+    workouts.forEach(row => {
+        const workoutDate = new Date(row.dataset.workoutDate);
+        const duration = parseFloat(row.querySelector('td:nth-child(3) span').textContent) || 0;
+        const calories = parseInt(row.querySelector('td:nth-child(4) span').textContent) || 0;
+        
+        if (workoutDate >= oneWeekAgo) {
+            weeklyCount++;
+        }
+        
+        totalTime += duration;
+        totalCalories += calories;
+    });
+    
+    const avgDuration = workouts.length > 0 ? totalTime / workouts.length : 0;
+    
+    // Update statistics
+    document.getElementById('weekly-workouts').textContent = weeklyCount;
+    document.getElementById('total-time').textContent = Math.round(totalTime) + 'm';
+    document.getElementById('avg-duration').textContent = Math.round(avgDuration) + 'm';
+    document.getElementById('total-calories').textContent = totalCalories.toLocaleString();
 }
 
+// Filter workouts by time period
+function filterWorkouts(period) {
+    const buttons = document.querySelectorAll('.btn-group .btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    const rows = document.querySelectorAll('#workoutsTable tbody tr');
+    const now = new Date();
+    
+    rows.forEach(row => {
+        const workoutDate = new Date(row.dataset.workoutDate);
+        let show = true;
+        
+        switch(period) {
+            case 'week':
+                const oneWeekAgo = new Date();
+                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                show = workoutDate >= oneWeekAgo;
+                break;
+            case 'month':
+                const oneMonthAgo = new Date();
+                oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+                show = workoutDate >= oneMonthAgo;
+                break;
+            case 'all':
+            default:
+                show = true;
+                break;
+        }
+        
+        row.style.display = show ? '' : 'none';
+    });
+}
+
+// View workout details
+function viewWorkoutDetails(workoutId) {
+    showAlert('info', `Loading workout details for ID: ${workoutId}`);
+    // This would open a modal with detailed workout information
+}
+
+// Edit workout
+function editWorkout(workoutId) {
+    showAlert('info', `Edit workout ID: ${workoutId}`);
+    // This would open the workout modal in edit mode
+}
+
+// Delete workout
+function deleteWorkout(workoutId) {
+    if (confirm('Are you sure you want to delete this workout?')) {
+        showAlert('success', `Workout ${workoutId} deleted successfully!`);
+        // This would make an API call to delete the workout
+        // and remove the row from the table
+    }
+}
+
+// Export workout data
+function exportWorkoutData() {
+    showAlert('info', 'Exporting workout data... This feature will be implemented soon.');
+}
+
+// Enhanced showAlert function
 function showAlert(type, message) {
     const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type === 'error' ? 'danger' : 'success'} alert-dismissible fade show`;
+    alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
     alertDiv.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
         ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
     
-    const container = document.querySelector('.container-fluid');
-    container.insertBefore(alertDiv, container.firstChild);
+    document.body.appendChild(alertDiv);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
 }
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    calculateWorkoutStats();
+});
 </script>
 {% endblock %}

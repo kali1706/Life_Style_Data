@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Local DBs / instances
+instance/
+*.db
+
+# Data dumps
+*.csv
+*.tsv
+*.parquet
+*.xlsx
+data/
+
+# Notebooks
+*.ipynb
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+

@@ -1,0 +1,860 @@
+{% extends "base.html" %}
+
+{% block title %}Advanced Analytics - Lifestyle Data Analytics Platform{% endblock %}
+
+{% block extra_head %}
+<style>
+    .analytics-tab {
+        border: none;
+        background: transparent;
+        padding: 1rem 1.5rem;
+        font-weight: 500;
+        color: var(--gray-600);
+        transition: var(--transition);
+        position: relative;
+    }
+    
+    .analytics-tab.active {
+        color: var(--primary-color);
+        background: var(--gray-50);
+    }
+    
+    .analytics-tab::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--primary-color);
+        transform: scaleX(0);
+        transition: var(--transition);
+    }
+    
+    .analytics-tab.active::after {
+        transform: scaleX(1);
+    }
+    
+    .metric-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .metric-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1;
+        margin: 0.5rem 0;
+    }
+    
+    .metric-label {
+        color: var(--gray-600);
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .metric-change {
+        font-size: 0.875rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .metric-change.positive {
+        color: var(--success-color);
+    }
+    
+    .metric-change.negative {
+        color: var(--danger-color);
+    }
+    
+    .chart-container {
+        position: relative;
+        height: 400px;
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+    }
+    
+    .chart-header {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .chart-controls {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .chart-control-btn {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--gray-300);
+        background: white;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        transition: var(--transition);
+    }
+    
+    .chart-control-btn.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    
+    .progress-ring {
+        transform: rotate(-90deg);
+    }
+    
+    .progress-ring-circle {
+        stroke-dasharray: 283;
+        stroke-dashoffset: 283;
+        transition: stroke-dashoffset 0.5s ease-in-out;
+    }
+    
+    .heatmap-container {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+    }
+    
+    .heatmap-day {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+    
+    .heatmap-day:hover {
+        transform: scale(1.1);
+    }
+    
+    .heatmap-legend {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        margin-top: 1rem;
+    }
+    
+    .heatmap-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+    }
+    
+    .heatmap-legend-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+    }
+    
+    .insight-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .insight-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(180deg); }
+    }
+    
+    .comparison-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+        border-left: 4px solid var(--primary-color);
+    }
+    
+    .comparison-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .comparison-item:last-child {
+        border-bottom: none;
+    }
+    
+    .comparison-label {
+        font-weight: 500;
+        color: var(--gray-700);
+    }
+    
+    .comparison-value {
+        font-weight: 600;
+        color: var(--gray-900);
+    }
+    
+    .comparison-change {
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+    
+    .loading-skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+    }
+    
+    @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+    
+    .skeleton-text {
+        height: 1rem;
+        border-radius: 0.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .skeleton-text.short {
+        width: 60%;
+    }
+    
+    .skeleton-text.medium {
+        width: 80%;
+    }
+    
+    .skeleton-text.long {
+        width: 100%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4" data-aos="fade-down">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 mb-2">
+                        <i class="fas fa-chart-line me-3"></i>Advanced Analytics
+                    </h1>
+                    <p class="text-muted mb-0">Comprehensive insights into your lifestyle data</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="exportData()">
+                        <i class="fas fa-download me-2"></i>Export Data
+                    </button>
+                    <button class="btn btn-primary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Tabs -->
+    <div class="row mb-4" data-aos="fade-up">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="d-flex border-bottom">
+                        <button class="analytics-tab active" onclick="switchTab('overview')" data-tab="overview">
+                            <i class="fas fa-tachometer-alt me-2"></i>Overview
+                        </button>
+                        <button class="analytics-tab" onclick="switchTab('fitness')" data-tab="fitness">
+                            <i class="fas fa-dumbbell me-2"></i>Fitness
+                        </button>
+                        <button class="analytics-tab" onclick="switchTab('nutrition')" data-tab="nutrition">
+                            <i class="fas fa-apple-alt me-2"></i>Nutrition
+                        </button>
+                        <button class="analytics-tab" onclick="switchTab('health')" data-tab="health">
+                            <i class="fas fa-heartbeat me-2"></i>Health
+                        </button>
+                        <button class="analytics-tab" onclick="switchTab('trends')" data-tab="trends">
+                            <i class="fas fa-chart-area me-2"></i>Trends
+                        </button>
+                        <button class="analytics-tab" onclick="switchTab('goals')" data-tab="goals">
+                            <i class="fas fa-target me-2"></i>Goals
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="tab-content">
+        <!-- Overview Tab -->
+        <div id="overview-tab" class="tab-pane active">
+            <!-- Key Metrics -->
+            <div class="row mb-4" data-aos="fade-up">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="metric-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="metric-label">Total Workouts</div>
+                                <div class="metric-value text-primary" id="total-workouts">-</div>
+                                <div class="metric-change positive">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>+12% this month</span>
+                                </div>
+                            </div>
+                            <div class="text-primary">
+                                <i class="fas fa-dumbbell fa-2x opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="metric-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="metric-label">Calories Burned</div>
+                                <div class="metric-value text-success" id="calories-burned">-</div>
+                                <div class="metric-change positive">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>+8% this week</span>
+                                </div>
+                            </div>
+                            <div class="text-success">
+                                <i class="fas fa-fire fa-2x opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="metric-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="metric-label">BMI Score</div>
+                                <div class="metric-value text-info" id="bmi-score">-</div>
+                                <div class="metric-change negative">
+                                    <i class="fas fa-arrow-down"></i>
+                                    <span>-2% this month</span>
+                                </div>
+                            </div>
+                            <div class="text-info">
+                                <i class="fas fa-weight fa-2x opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="metric-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="metric-label">Consistency</div>
+                                <div class="metric-value text-warning" id="consistency-score">-</div>
+                                <div class="metric-change positive">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>+5% this week</span>
+                                </div>
+                            </div>
+                            <div class="text-warning">
+                                <i class="fas fa-chart-line fa-2x opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row mb-4" data-aos="fade-up">
+                <div class="col-lg-8 mb-4">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h5 class="mb-0">Activity Overview (Last 30 Days)</h5>
+                            <div class="chart-controls">
+                                <button class="chart-control-btn active" data-period="30d">30D</button>
+                                <button class="chart-control-btn" data-period="7d">7D</button>
+                                <button class="chart-control-btn" data-period="90d">90D</button>
+                            </div>
+                        </div>
+                        <canvas id="activityChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h5 class="mb-0">Goal Progress</h5>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <div class="position-relative">
+                                <svg class="progress-ring" width="200" height="200">
+                                    <circle class="progress-ring-circle" stroke="#e5e7eb" stroke-width="8" fill="transparent" r="90" cx="100" cy="100"/>
+                                    <circle class="progress-ring-circle" stroke="#10b981" stroke-width="8" fill="transparent" r="90" cx="100" cy="100" id="progress-circle"/>
+                                </svg>
+                                <div class="position-absolute top-50 start-50 translate-middle text-center">
+                                    <div class="h3 mb-0" id="progress-percentage">75%</div>
+                                    <small class="text-muted">Goal Complete</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heatmap and Insights -->
+            <div class="row mb-4" data-aos="fade-up">
+                <div class="col-lg-8 mb-4">
+                    <div class="heatmap-container">
+                        <h5 class="mb-3">Activity Heatmap</h5>
+                        <div id="activity-heatmap"></div>
+                        <div class="heatmap-legend">
+                            <div class="heatmap-legend-item">
+                                <div class="heatmap-legend-color" style="background: #ebedf0;"></div>
+                                <span>No activity</span>
+                            </div>
+                            <div class="heatmap-legend-item">
+                                <div class="heatmap-legend-color" style="background: #c6e48b;"></div>
+                                <span>Low</span>
+                            </div>
+                            <div class="heatmap-legend-item">
+                                <div class="heatmap-legend-color" style="background: #7bc96f;"></div>
+                                <span>Medium</span>
+                            </div>
+                            <div class="heatmap-legend-item">
+                                <div class="heatmap-legend-color" style="background: #239a3b;"></div>
+                                <span>High</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <div class="insight-card">
+                        <h5 class="mb-3">
+                            <i class="fas fa-lightbulb me-2"></i>AI Insights
+                        </h5>
+                        <div class="insight-item mb-3">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-check-circle me-2 mt-1"></i>
+                                <div>
+                                    <strong>Great Progress!</strong>
+                                    <p class="mb-0 small">Your consistency has improved by 15% this month.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="insight-item mb-3">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-exclamation-triangle me-2 mt-1"></i>
+                                <div>
+                                    <strong>Room for Improvement</strong>
+                                    <p class="mb-0 small">Consider increasing your cardio sessions.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="insight-item">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-info-circle me-2 mt-1"></i>
+                                <div>
+                                    <strong>Recommendation</strong>
+                                    <p class="mb-0 small">Try adding 10 minutes of stretching daily.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other tabs will be loaded dynamically -->
+        <div id="fitness-tab" class="tab-pane">
+            <div class="text-center py-5">
+                <div class="loading-skeleton skeleton-text long mb-3"></div>
+                <div class="loading-skeleton skeleton-text medium mb-3"></div>
+                <div class="loading-skeleton skeleton-text short"></div>
+            </div>
+        </div>
+
+        <div id="nutrition-tab" class="tab-pane">
+            <div class="text-center py-5">
+                <div class="loading-skeleton skeleton-text long mb-3"></div>
+                <div class="loading-skeleton skeleton-text medium mb-3"></div>
+                <div class="loading-skeleton skeleton-text short"></div>
+            </div>
+        </div>
+
+        <div id="health-tab" class="tab-pane">
+            <div class="text-center py-5">
+                <div class="loading-skeleton skeleton-text long mb-3"></div>
+                <div class="loading-skeleton skeleton-text medium mb-3"></div>
+                <div class="loading-skeleton skeleton-text short"></div>
+            </div>
+        </div>
+
+        <div id="trends-tab" class="tab-pane">
+            <div class="text-center py-5">
+                <div class="loading-skeleton skeleton-text long mb-3"></div>
+                <div class="loading-skeleton skeleton-text medium mb-3"></div>
+                <div class="loading-skeleton skeleton-text short"></div>
+            </div>
+        </div>
+
+        <div id="goals-tab" class="tab-pane">
+            <div class="text-center py-5">
+                <div class="loading-skeleton skeleton-text long mb-3"></div>
+                <div class="loading-skeleton skeleton-text medium mb-3"></div>
+                <div class="loading-skeleton skeleton-text short"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Tab switching functionality
+function switchTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.analytics-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+    
+    // Update tab content
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+        pane.classList.remove('active');
+    });
+    document.getElementById(`${tabName}-tab`).classList.add('active');
+    
+    // Load tab content
+    loadTabContent(tabName);
+}
+
+// Load tab content dynamically
+async function loadTabContent(tabName) {
+    const tabElement = document.getElementById(`${tabName}-tab`);
+    
+    // Show loading state
+    tabElement.innerHTML = `
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="text-muted">Loading ${tabName} analytics...</p>
+        </div>
+    `;
+    
+    try {
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Load actual content based on tab
+        switch(tabName) {
+            case 'fitness':
+                loadFitnessContent(tabElement);
+                break;
+            case 'nutrition':
+                loadNutritionContent(tabElement);
+                break;
+            case 'health':
+                loadHealthContent(tabElement);
+                break;
+            case 'trends':
+                loadTrendsContent(tabElement);
+                break;
+            case 'goals':
+                loadGoalsContent(tabElement);
+                break;
+        }
+    } catch (error) {
+        tabElement.innerHTML = `
+            <div class="text-center py-5">
+                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                <h5>Error Loading Content</h5>
+                <p class="text-muted">Please try again later.</p>
+            </div>
+        `;
+    }
+}
+
+// Load fitness content
+function loadFitnessContent(element) {
+    element.innerHTML = `
+        <div class="row">
+            <div class="col-12">
+                <h4>Fitness Analytics</h4>
+                <p>Detailed fitness metrics and workout analysis will be displayed here.</p>
+            </div>
+        </div>
+    `;
+}
+
+// Load nutrition content
+function loadNutritionContent(element) {
+    element.innerHTML = `
+        <div class="row">
+            <div class="col-12">
+                <h4>Nutrition Analytics</h4>
+                <p>Detailed nutrition metrics and dietary analysis will be displayed here.</p>
+            </div>
+        </div>
+    `;
+}
+
+// Load health content
+function loadHealthContent(element) {
+    element.innerHTML = `
+        <div class="row">
+            <div class="col-12">
+                <h4>Health Analytics</h4>
+                <p>Detailed health metrics and wellness analysis will be displayed here.</p>
+            </div>
+        </div>
+    `;
+}
+
+// Load trends content
+function loadTrendsContent(element) {
+    element.innerHTML = `
+        <div class="row">
+            <div class="col-12">
+                <h4>Trends Analytics</h4>
+                <p>Detailed trend analysis and pattern recognition will be displayed here.</p>
+            </div>
+        </div>
+    `;
+}
+
+// Load goals content
+function loadGoalsContent(element) {
+    element.innerHTML = `
+        <div class="row">
+            <div class="col-12">
+                <h4>Goals Analytics</h4>
+                <p>Goal tracking and achievement analysis will be displayed here.</p>
+            </div>
+        </div>
+    `;
+}
+
+// Initialize charts
+function initializeCharts() {
+    // Activity Chart
+    const activityCtx = document.getElementById('activityChart').getContext('2d');
+    new Chart(activityCtx, {
+        type: 'line',
+        data: {
+            labels: generateDateLabels(30),
+            datasets: [{
+                label: 'Workouts',
+                data: generateRandomData(30, 0, 5),
+                borderColor: '#6366f1',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Calories Burned',
+                data: generateRandomData(30, 200, 800),
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                tension: 0.4,
+                fill: true,
+                yAxisID: 'y1'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            scales: {
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'Workouts'
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'Calories'
+                    },
+                    grid: {
+                        drawOnChartArea: false,
+                    },
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            }
+        }
+    });
+    
+    // Initialize progress circle
+    updateProgressCircle(75);
+    
+    // Initialize heatmap
+    initializeHeatmap();
+}
+
+// Generate date labels
+function generateDateLabels(days) {
+    const labels = [];
+    for (let i = days - 1; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+    }
+    return labels;
+}
+
+// Generate random data
+function generateRandomData(count, min, max) {
+    const data = [];
+    for (let i = 0; i < count; i++) {
+        data.push(Math.floor(Math.random() * (max - min + 1)) + min);
+    }
+    return data;
+}
+
+// Update progress circle
+function updateProgressCircle(percentage) {
+    const circle = document.getElementById('progress-circle');
+    const circumference = 2 * Math.PI * 90;
+    const offset = circumference - (percentage / 100) * circumference;
+    circle.style.strokeDashoffset = offset;
+    document.getElementById('progress-percentage').textContent = percentage + '%';
+}
+
+// Initialize heatmap
+function initializeHeatmap() {
+    const heatmapContainer = document.getElementById('activity-heatmap');
+    const weeks = 12;
+    const daysPerWeek = 7;
+    
+    let html = '<div class="d-flex flex-wrap gap-1">';
+    
+    for (let week = 0; week < weeks; week++) {
+        for (let day = 0; day < daysPerWeek; day++) {
+            const intensity = Math.floor(Math.random() * 5);
+            const colorClass = getHeatmapColor(intensity);
+            html += `<div class="heatmap-day ${colorClass}" title="Week ${week + 1}, Day ${day + 1}: ${intensity} activities"></div>`;
+        }
+    }
+    
+    html += '</div>';
+    heatmapContainer.innerHTML = html;
+}
+
+// Get heatmap color based on intensity
+function getHeatmapColor(intensity) {
+    const colors = [
+        'bg-light', // 0
+        'bg-success bg-opacity-25', // 1
+        'bg-success bg-opacity-50', // 2
+        'bg-success bg-opacity-75', // 3
+        'bg-success' // 4
+    ];
+    return colors[intensity] || colors[0];
+}
+
+// Export data function
+function exportData() {
+    showAlert('info', 'Exporting data... This feature will be implemented soon.');
+}
+
+// Refresh data function
+function refreshData() {
+    showAlert('success', 'Data refreshed successfully!');
+    // Reload charts and data
+    initializeCharts();
+}
+
+// Chart period controls
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('chart-control-btn')) {
+        document.querySelectorAll('.chart-control-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        e.target.classList.add('active');
+        
+        // Update chart based on period
+        const period = e.target.dataset.period;
+        updateChartPeriod(period);
+    }
+});
+
+// Update chart period
+function updateChartPeriod(period) {
+    // This would update the chart data based on the selected period
+    console.log('Updating chart period to:', period);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    initializeCharts();
+    
+    // Load initial data
+    setTimeout(() => {
+        document.getElementById('total-workouts').textContent = '47';
+        document.getElementById('calories-burned').textContent = '12,450';
+        document.getElementById('bmi-score').textContent = '22.3';
+        document.getElementById('consistency-score').textContent = '85%';
+    }, 1000);
+});
+</script>
+{% endblock %}

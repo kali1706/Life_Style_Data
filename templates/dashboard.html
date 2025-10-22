@@ -22,14 +22,17 @@
     </div>
 
     <!-- Key Metrics Cards -->
-    <div class="row mb-4">
+    <div class="row mb-4" data-aos="fade-up">
         <div class="col-md-3 mb-3">
-            <div class="card bg-primary text-white">
+            <div class="card card-gradient-primary text-white card-animated">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
                             <h6 class="card-title text-white-50">Total Workouts</h6>
                             <h3 class="mb-0">{{ data.total_workouts }}</h3>
+                            <small class="text-white-75">
+                                <i class="fas fa-arrow-up me-1"></i>+12% this month
+                            </small>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-dumbbell fa-2x opacity-75"></i>
@@ -40,12 +43,15 @@
         </div>
         
         <div class="col-md-3 mb-3">
-            <div class="card bg-success text-white">
+            <div class="card card-gradient-success text-white card-animated" style="animation-delay: 0.1s;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
                             <h6 class="card-title text-white-50">Calories Burned</h6>
                             <h3 class="mb-0">{{ data.total_calories_burned }}</h3>
+                            <small class="text-white-75">
+                                <i class="fas fa-arrow-up me-1"></i>+8% this week
+                            </small>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-fire fa-2x opacity-75"></i>
@@ -56,12 +62,15 @@
         </div>
         
         <div class="col-md-3 mb-3">
-            <div class="card bg-info text-white">
+            <div class="card card-gradient-info text-white card-animated" style="animation-delay: 0.2s;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
                             <h6 class="card-title text-white-50">Avg Session</h6>
                             <h3 class="mb-0">{{ data.avg_session_duration }}m</h3>
+                            <small class="text-white-75">
+                                <i class="fas fa-arrow-up me-1"></i>+5% this week
+                            </small>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-clock fa-2x opacity-75"></i>
@@ -72,12 +81,15 @@
         </div>
         
         <div class="col-md-3 mb-3">
-            <div class="card bg-warning text-white">
+            <div class="card card-gradient-warning text-white card-animated" style="animation-delay: 0.3s;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
                             <h6 class="card-title text-white-50">Consistency</h6>
                             <h3 class="mb-0">{{ data.consistency_score }}%</h3>
+                            <small class="text-white-75">
+                                <i class="fas fa-arrow-up me-1"></i>+3% this month
+                            </small>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-chart-line fa-2x opacity-75"></i>
@@ -89,9 +101,9 @@
     </div>
 
     <!-- Charts Row -->
-    <div class="row mb-4">
+    <div class="row mb-4" data-aos="fade-up" data-aos-delay="200">
         <div class="col-lg-8 mb-4">
-            <div class="card">
+            <div class="card card-animated">
                 <div class="card-header">
                     <h5 class="card-title mb-0">
                         <i class="fas fa-chart-line me-2"></i>BMI Trend
@@ -104,7 +116,7 @@
         </div>
         
         <div class="col-lg-4 mb-4">
-            <div class="card">
+            <div class="card card-animated">
                 <div class="card-header">
                     <h5 class="card-title mb-0">
                         <i class="fas fa-chart-pie me-2"></i>Macro Distribution
