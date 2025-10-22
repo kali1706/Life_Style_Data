@@ -14,14 +14,5 @@ APScheduler==3.10.4
 python-dotenv==1.0.1
 email-validator==2.2.0
 Pillow==10.4.0
-
-# Database drivers - platform specific
-# For Windows (SQL Server)
-PyMySQL==1.1.2; sys_platform == "win32"
-pyodbc==5.3.0; sys_platform == "win32"
-
-# For Linux/Deployment (PostgreSQL)
-psycopg2-binary==2.9.9; sys_platform == "linux"
-
-# For deployment platforms (Render.com, Heroku, etc.)
-psycopg2-binary==2.9.9; platform_system == "Linux"
+PyMySQL==1.1.2
+pyodbc==5.0.1
