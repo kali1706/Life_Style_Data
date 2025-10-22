@@ -109,15 +109,17 @@ class DatabaseConfig:
         # Check if DATABASE_URL is provided (common in deployment platforms)
         database_url = os.environ.get('DATABASE_URL')
         if database_url:
-            # Convert postgres:// to postgresql:// for SQLAlchemy
+            # Normalize to psycopg3 driver URL for SQLAlchemy
             if database_url.startswith('postgres://'):
-                database_url = database_url.replace('postgres://', 'postgresql://', 1)
+                database_url = database_url.replace('postgres://', 'postgresql+psycopg://', 1)
+            elif database_url.startswith('postgresql://'):
+                database_url = database_url.replace('postgresql://', 'postgresql+psycopg://', 1)
             return database_url
         
         # Fallback to individual components
         username = quote_plus(cls.POSTGRES_USERNAME)
         password = quote_plus(cls.POSTGRES_PASSWORD)
-        return f"postgresql://{username}:{password}@{cls.POSTGRES_HOST}:{cls.POSTGRES_PORT}/{cls.POSTGRES_DATABASE}"
+        return f"postgresql+psycopg://{username}:{password}@{cls.POSTGRES_HOST}:{cls.POSTGRES_PORT}/{cls.POSTGRES_DATABASE}"
     
     @classmethod
     def get_connection_params(cls):
