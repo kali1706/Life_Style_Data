@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: lifestyle-analytics
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: DATABASE_TYPE
+        value: postgresql
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+    healthCheckPath: /
+    
+  - type: pserv
+    name: lifestyle-analytics-db
+    env: postgresql
+    plan: free
+    envVars:
+      - key: POSTGRES_DATABASE
+        value: lifestyle_analytics
+      - key: POSTGRES_USER
+        value: lifestyle_user
+      - key: POSTGRES_PASSWORD
+        generateValue: true

@@ -1,13 +1,15 @@
 import os
 from datetime import timedelta
 
-# Try to import unified database configuration
+# Try to import cross-platform database configuration
 try:
     from database_config import DatabaseConfig
     DATABASE_URI = DatabaseConfig.get_database_url()
+    print(f"Using {DatabaseConfig.get_database_type()} database")
 except ImportError:
     # Fallback to environment variable or SQLite
     DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///instance/lifestyle_analytics.db'
+    print("Using fallback database configuration")
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'lifestyle-analytics-secret-key-2024'
