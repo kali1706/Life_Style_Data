@@ -1,9 +1,17 @@
 import os
 from datetime import timedelta
 
+# Try to import unified database configuration
+try:
+    from database_config import DatabaseConfig
+    DATABASE_URI = DatabaseConfig.get_database_url()
+except ImportError:
+    # Fallback to environment variable or SQLite
+    DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///instance/lifestyle_analytics.db'
+
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'lifestyle-analytics-secret-key-2024'
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///instance/lifestyle_analytics.db'
+    SQLALCHEMY_DATABASE_URI = DATABASE_URI
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Email configuration
